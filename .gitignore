@@ -1,0 +1,9 @@
+node_modules
+.DS_Store
+ios/Plugin/Pods/
+dist
+# android/@openforge/capacitor-single-signon/build
+.idea
+.gradle
+.settings
+*.tgz
