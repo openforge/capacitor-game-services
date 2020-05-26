@@ -8,9 +8,15 @@ def capacitor_pods
 end
 
 target 'Plugin' do
+  pod 'Firebase/Core'
+  pod 'Firebase/Auth'
+
   capacitor_pods
 end
 
 target 'PluginTests' do
+  pod 'Firebase/Core'
+  pod 'Firebase/Auth'
+  
   capacitor_pods
 end

@@ -1,6 +1,8 @@
 node_modules
 .DS_Store
-ios/Plugin/Pods/
+
+ios/Pods
+
 dist
 # android/@openforge/capacitor-single-signon/build
 .idea
