@@ -8,7 +8,8 @@ import Foundation
 
 import Capacitor
 import GameKit
-import Firebase
+import FirebaseCore
+import FirebaseAuth
 import AuthenticationServices
 
 
