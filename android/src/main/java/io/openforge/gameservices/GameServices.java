@@ -1,4 +1,4 @@
-package com.startupwarsapp.startupwars;
+package io.openforge.gameservices;
 
 import com.getcapacitor.JSObject;
 import com.getcapacitor.NativePlugin;
@@ -35,6 +35,8 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GetTokenResult;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.auth.PlayGamesAuthProvider;
+
+import io.openforge.gameservices.capacitorgameservices.R;
 
 /**
  * GameServices plugin
