@@ -63,7 +63,7 @@ public class GameServices extends Plugin {
             Log.d(TAG, "starting handler for rc sign in");
             GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
             if (result.isSuccess()) {
-                call.resolve();
+                savedCall.resolve();
             } else {
                 String message = result.getStatus().getStatusMessage();
                 if (message == null || message.isEmpty()) {
@@ -226,7 +226,7 @@ public class GameServices extends Plugin {
         signInClient.silentSignIn().addOnCompleteListener(getActivity(), (Task<GoogleSignInAccount> task) -> {
             if (task.isSuccessful()) {
                 GoogleSignInAccount signedInAccount = task.getResult();
-                saveCall.resolve();
+                savedCall.resolve();
             } else {
                 startSignInIntent();
             }
