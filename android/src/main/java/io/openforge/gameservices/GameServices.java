@@ -47,9 +47,7 @@ public class GameServices extends Plugin {
         super.load();
         Log.d(TAG, "lifecycle load called");
 
-        mGoogleSignInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_GAMES_SIGN_IN)
-                .requestIdToken(getContext().getString(R.string.default_web_client_id))
-                .requestServerAuthCode(getContext().getString(R.string.default_web_client_id)).build();
+        mGoogleSignInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_GAMES_SIGN_IN).build();
     }
 
     @Override
