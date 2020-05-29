@@ -63,7 +63,7 @@ public class GameServices extends Plugin {
             Log.d(TAG, "starting handler for rc sign in");
             GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
             if (result.isSuccess()) {
-                resolveCallWithToken(result.getSignInAccount());
+                call.resolve();
             } else {
                 String message = result.getStatus().getStatusMessage();
                 if (message == null || message.isEmpty()) {
@@ -221,11 +221,12 @@ public class GameServices extends Plugin {
     private void startSilentSignIn() {
         GoogleSignInOptions signInOptions = mGoogleSignInOptions;
         GoogleSignInClient signInClient = GoogleSignIn.getClient(getContext(), signInOptions);
+        PluginCall savedCall = getSavedCall();
 
         signInClient.silentSignIn().addOnCompleteListener(getActivity(), (Task<GoogleSignInAccount> task) -> {
             if (task.isSuccessful()) {
                 GoogleSignInAccount signedInAccount = task.getResult();
-                resolveCallWithToken(signedInAccount);
+                saveCall.resolve();
             } else {
                 startSignInIntent();
             }
@@ -238,10 +239,5 @@ public class GameServices extends Plugin {
         GoogleSignInClient signInClient = GoogleSignIn.getClient(getContext(), mGoogleSignInOptions);
         Intent intent = signInClient.getSignInIntent();
         startActivityForResult(null, intent, RC_SIGN_IN);
-    }
-
-    private void resolveCallWithToken(GoogleSignInAccount acct) {
-        AuthCredential playgamesCredential = PlayGamesAuthProvider.getCredential(acct.getServerAuthCode());
-        PluginCall savedCall = getSavedCall();
     }
 }
