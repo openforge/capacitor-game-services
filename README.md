@@ -11,3 +11,12 @@
 8. Go to testing tab and add test account.
 9. Go to leaderboards and add a leaderboard, copying the id value.
 10. Add the plugin to main activity after running npx cap sync
+
+## Setting up Apple Game Services
+
+1. Click on target app in xcode
+2. Add team to signing and capabilities
+3. Add game center capability
+4. https://appstoreconnect.apple.com/
+5. add app, probably should use bundle id as sku
+6. go to features, add leaderboard matching the generated id from google
