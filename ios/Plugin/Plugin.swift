@@ -8,10 +8,7 @@ import Foundation
 
 import Capacitor
 import GameKit
-import FirebaseCore
-import FirebaseAuth
 import AuthenticationServices
-
 
 @available(iOS 13.0, *)
 @objc(GameServices)
@@ -19,20 +16,7 @@ public class GameServices: CAPPlugin, GKGameCenterControllerDelegate {
     public func gameCenterViewControllerDidFinish(_ gameCenterViewController: GKGameCenterViewController) {
         gameCenterViewController.dismiss(animated: true, completion: nil)
     }
-    
-    var signInHandler: GetAppleSignInHandler?
-    
-    /**
-     TODO: rename authentication loop? something similar? Iteration? Auth Cycle Iteration? how will this actually loop tho?
-     TODO: need to test behavior after signing out, will it auth to firebase on first pass, what if no internet on load, how to cycle, "waiting for connection" on auth page?
-     "As part of your Game Center integration, you define an authentication handler that is called at multiple points in the Game Center authentication process."
-     https://firebase.google.com/docs/auth/ios/game-center#integrate_game_center_sign-in_into_your_game
-     */
-    
-    
-    
-    // TODO: why is the flow on this call so off????!
-    // TODO: will this ever actually do any work with ios side?
+        
     @objc func signIn(_ call: CAPPluginCall) {
         let localPalyer = GKLocalPlayer.local
         
@@ -48,25 +32,6 @@ public class GameServices: CAPPlugin, GKGameCenterControllerDelegate {
             } else if localPalyer.isAuthenticated {
                 print("[GameServices] local player is authenticated")
                 
-                GameCenterAuthProvider.getCredential() { (credential, error) in
-                    if error != nil {
-                        return
-                    }
-                    
-                    Auth.auth().signIn(with: credential!) { (user, error) in
-                        if error != nil {
-                            return
-                        }
-                        
-                        Auth.auth().currentUser?.getIDToken() { (anIDToken, error) in
-
-                            print("GameServices anIDToken \(anIDToken ?? "")")
-                            call.resolve(["token": anIDToken ?? ""])
-                        };
-                        
-                    }
-                    
-                }
             } else {
                 // error
             }
@@ -120,9 +85,6 @@ public class GameServices: CAPPlugin, GKGameCenterControllerDelegate {
             call.resolve(["result": successMessage])
         }
     }
-    
-    
-    
     
     @objc func unlockAchievement(_ call: CAPPluginCall) {
         print("unlockAchievement:called")
@@ -179,54 +141,5 @@ public class GameServices: CAPPlugin, GKGameCenterControllerDelegate {
             print(successMessage)
             call.resolve(["result": successMessage])
         }
-    }
-    
-    
-    func appleSignIn(_ call: CAPPluginCall, linkTo: AuthCredential) {
-        call.save()
-        DispatchQueue.main.async {
-            self.signInHandler = GetAppleSignInHandler(call: call, window: (self.bridge?.getWebView()?.window)!)
-        }
-    }
-}
-
-// source: https://www.ionicanddjangotutorial.com/ionic-apple-signin-with-capacitor.html
-@available(iOS 13.0, *)
-class GetAppleSignInHandler: NSObject, ASAuthorizationControllerDelegate {
-    var call: CAPPluginCall
-    var window: UIWindow
-    var identityTokenString: String?
-    
-    init(call: CAPPluginCall, window: UIWindow) {
-        self.call = call
-        self.window = window
-        super.init()
-        let appleIDProvider = ASAuthorizationAppleIDProvider()
-        let request = appleIDProvider.createRequest()
-        request.requestedScopes = [.fullName, .email]
-        let authorizationController = ASAuthorizationController(authorizationRequests: [request])
-        authorizationController.presentationContextProvider = self
-        authorizationController.delegate = self
-        authorizationController.performRequests()
-    }
-    
-    func authorizationController(controller: ASAuthorizationController, didCompleteWithError error: Error) {
-        call.error(error.localizedDescription)
-    }
-    
-    func authorizationController(controller: ASAuthorizationController, didCompleteWithAuthorization authorization: ASAuthorization) {
-        if let appleIDCredential = authorization.credential as? ASAuthorizationAppleIDCredential {
-            if let identityTokenData = appleIDCredential.identityToken, let theIdentityTokenString = String(data: identityTokenData, encoding: .utf8) {
-                self.identityTokenString = theIdentityTokenString
-            }
-        }
-    }
-}
-
-
-@available(iOS 13.0, *)
-extension GetAppleSignInHandler: ASAuthorizationControllerPresentationContextProviding {
-    public func presentationAnchor(for controller: ASAuthorizationController) -> ASPresentationAnchor {
-        return self.window;
     }
 }

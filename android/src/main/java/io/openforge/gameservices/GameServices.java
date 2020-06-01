@@ -25,25 +25,14 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.FirebaseApp;
-import com.google.firebase.analytics.FirebaseAnalytics;
-import com.google.firebase.auth.AuthCredential;
-import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseAuthUserCollisionException;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.GetTokenResult;
-import com.google.firebase.auth.GoogleAuthProvider;
-import com.google.firebase.auth.PlayGamesAuthProvider;
 
 import io.openforge.gameservices.capacitorgameservices.R;
 
 /**
  * GameServices plugin
  */
-@NativePlugin(
-        requestCodes={GameServices.RC_SIGN_IN, GameServices.RC_LEADERBOARD_UI, GameServices.RC_ACHIEVEMENT_UI}
-)
+@NativePlugin(requestCodes = { GameServices.RC_SIGN_IN, GameServices.RC_LEADERBOARD_UI,
+        GameServices.RC_ACHIEVEMENT_UI })
 public class GameServices extends Plugin {
     static final int RC_SIGN_IN = 1;
     static final int RC_LEADERBOARD_UI = 9004;
@@ -51,7 +40,6 @@ public class GameServices extends Plugin {
 
     private String TAG = "GameServices";
     private GoogleSignInOptions mGoogleSignInOptions;
-    private FirebaseAuth mAuth;
 
     // MARK: Plugin Overrides
     @Override
@@ -59,12 +47,7 @@ public class GameServices extends Plugin {
         super.load();
         Log.d(TAG, "lifecycle load called");
 
-        mGoogleSignInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_GAMES_SIGN_IN)
-                .requestIdToken(getContext().getString(R.string.default_web_client_id))
-                .requestServerAuthCode(getContext().getString(R.string.default_web_client_id))
-                .build();
-
-        mAuth = FirebaseAuth.getInstance();
+        mGoogleSignInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_GAMES_SIGN_IN).build();
     }
 
     @Override
@@ -78,7 +61,7 @@ public class GameServices extends Plugin {
             Log.d(TAG, "starting handler for rc sign in");
             GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
             if (result.isSuccess()) {
-                resolveCallWithToken(result.getSignInAccount());
+                savedCall.resolve();
             } else {
                 String message = result.getStatus().getStatusMessage();
                 if (message == null || message.isEmpty()) {
@@ -112,9 +95,10 @@ public class GameServices extends Plugin {
         });
     }
 
-
     /**
-     * TODO: if no leaderboardId (show ios default leaderboard if set, show android all leaderboards)
+     * TODO: if no leaderboardId (show ios default leaderboard if set, show android
+     * all leaderboards)
+     * 
      * @param call
      */
     @PluginMethod()
@@ -127,8 +111,7 @@ public class GameServices extends Plugin {
         Log.d(TAG, "showLeaderboard called with id: " + leaderboardId);
 
         GoogleSignInAccount mGoogleSignInAccount = GoogleSignIn.getLastSignedInAccount(getContext());
-        Games.getLeaderboardsClient(getContext(), mGoogleSignInAccount)
-                .getLeaderboardIntent(leaderboardId)
+        Games.getLeaderboardsClient(getContext(), mGoogleSignInAccount).getLeaderboardIntent(leaderboardId)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         Log.d(TAG, "showLeaderboard:getIntent:success");
@@ -143,7 +126,9 @@ public class GameServices extends Plugin {
 
     /**
      * TODO: test and handle/throw errors for non integer values passed to score,
-     *  not to mention, score can be non-integer values depending on game store and leaderboard settings.
+     * not to mention, score can be non-integer values depending on game store and
+     * leaderboard settings.
+     * 
      * @param call
      */
     @PluginMethod()
@@ -153,12 +138,10 @@ public class GameServices extends Plugin {
         Log.d(TAG, String.format("submitScore:leaderboardId:%s:score:%d", leaderboardId, score));
 
         Games.getLeaderboardsClient(getContext(), GoogleSignIn.getLastSignedInAccount(getContext()))
-                .submitScoreImmediate(leaderboardId, score)
-                .addOnSuccessListener(scoreSubmissionData -> {
+                .submitScoreImmediate(leaderboardId, score).addOnSuccessListener(scoreSubmissionData -> {
                     Log.d(TAG, "submitScore:success");
                     call.resolve(new JSObject().put("result", "submitScore:success"));
-                })
-                .addOnFailureListener(error -> {
+                }).addOnFailureListener(error -> {
                     Log.e(TAG, String.format("submitScore:error:%s", error.getMessage()));
                     call.reject(String.format("submitScore:error:%s", error.getMessage()));
                 });
@@ -170,19 +153,19 @@ public class GameServices extends Plugin {
 
         Games.getAchievementsClient(getContext(), GoogleSignIn.getLastSignedInAccount(getContext()))
                 .getAchievementsIntent().addOnSuccessListener(intent -> {
-            saveCall(call);
-            Log.d(TAG, "showAchievements:success");
-            startActivityForResult(call, intent, RC_ACHIEVEMENT_UI);
-        })
-                .addOnFailureListener(error -> {
+                    saveCall(call);
+                    Log.d(TAG, "showAchievements:success");
+                    startActivityForResult(call, intent, RC_ACHIEVEMENT_UI);
+                }).addOnFailureListener(error -> {
                     Log.e(TAG, "showAchievements:error:" + error.getMessage());
                     call.reject("showAchievements:error:" + error.getMessage());
                 });
     }
 
     /**
-     * Fails when trying to unlock a incremental achievement
-     * TODO: needs to respond to all available errors in error responses
+     * Fails when trying to unlock a incremental achievement TODO: needs to respond
+     * to all available errors in error responses
+     * 
      * @param call
      */
     @PluginMethod()
@@ -192,16 +175,15 @@ public class GameServices extends Plugin {
 
         Games.getAchievementsClient(getContext(), GoogleSignIn.getLastSignedInAccount(getContext()))
                 .unlockImmediate(achievementId).addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                Log.d(TAG, "unlockAchievement:success");
-                call.resolve(new JSObject().put("response", "unlockAchievement:success"));
-            } else {
-                Log.e(TAG, "unlockAchievement:failure" + task.getException());
-                call.reject("unlockAchievement:failure");
-            }
-        });
+                    if (task.isSuccessful()) {
+                        Log.d(TAG, "unlockAchievement:success");
+                        call.resolve(new JSObject().put("response", "unlockAchievement:success"));
+                    } else {
+                        Log.e(TAG, "unlockAchievement:failure" + task.getException());
+                        call.reject("unlockAchievement:failure");
+                    }
+                });
     }
-
 
     @PluginMethod()
     public void progressAchievement(PluginCall call) {
@@ -210,8 +192,9 @@ public class GameServices extends Plugin {
             call.reject("progressAchievement:error: achievementId not provided");
             return;
         }
-        // TODO: does this need error handling when a number that looks like an integer is passed, how
-        //  does capacitor number conversion work here?
+        // TODO: does this need error handling when a number that looks like an integer
+        // is passed, how
+        // does capacitor number conversion work here?
         double percentComplete = call.getDouble("achievementId", 100.0);
         int stepsComplete = (int) Math.floor(percentComplete);
         Log.d(TAG, String.format("progressAchievement:%s:percentage:%s", achievementId, stepsComplete));
@@ -219,52 +202,40 @@ public class GameServices extends Plugin {
         // TODO: do math to get desired increment
         Games.getAchievementsClient(getContext(), GoogleSignIn.getLastSignedInAccount(getContext()))
                 .setStepsImmediate(achievementId, stepsComplete).addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                String successMessage = task.getResult() ? "progressAchievement:success:unlocked" : "progressAchievement:success";
-                Log.d(TAG, successMessage);
-                call.resolve(new JSObject().put("result", successMessage));
-            } else {
-                Log.e(TAG, "progressAchievement:error" + task.getException().getMessage());
-                call.reject("progressAchievement:error");
-            }
-        });
+                    if (task.isSuccessful()) {
+                        String successMessage = task.getResult() ? "progressAchievement:success:unlocked"
+                                : "progressAchievement:success";
+                        Log.d(TAG, successMessage);
+                        call.resolve(new JSObject().put("result", successMessage));
+                    } else {
+                        Log.e(TAG, "progressAchievement:error" + task.getException().getMessage());
+                        call.reject("progressAchievement:error");
+                    }
+                });
     }
-
 
     // MARK: Private Methods
 
     private void startSilentSignIn() {
         GoogleSignInOptions signInOptions = mGoogleSignInOptions;
         GoogleSignInClient signInClient = GoogleSignIn.getClient(getContext(), signInOptions);
+        PluginCall savedCall = getSavedCall();
 
         signInClient.silentSignIn().addOnCompleteListener(getActivity(), (Task<GoogleSignInAccount> task) -> {
             if (task.isSuccessful()) {
                 GoogleSignInAccount signedInAccount = task.getResult();
-                resolveCallWithToken(signedInAccount);
+                savedCall.resolve();
             } else {
                 startSignInIntent();
             }
         });
 
     }
+
     private void startSignInIntent() {
         Log.d(TAG, "startSignInIntent:called");
         GoogleSignInClient signInClient = GoogleSignIn.getClient(getContext(), mGoogleSignInOptions);
         Intent intent = signInClient.getSignInIntent();
         startActivityForResult(null, intent, RC_SIGN_IN);
-    }
-
-    private void resolveCallWithToken(GoogleSignInAccount acct) {
-        AuthCredential playgamesCredential = PlayGamesAuthProvider.getCredential(acct.getServerAuthCode());
-        PluginCall savedCall = getSavedCall();
-        mAuth.signInWithCredential(playgamesCredential).addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                Log.d(TAG, "signed in!!!");
-            } else {
-
-            }
-        });
-
-
     }
 }

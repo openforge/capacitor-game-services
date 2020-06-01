@@ -11,5 +11,4 @@ CAP_PLUGIN(GameServices, "GameServices",
     CAP_PLUGIN_METHOD(unlockAchievement, CAPPluginReturnPromise);
     CAP_PLUGIN_METHOD(progressAchievement, CAPPluginReturnPromise);
     CAP_PLUGIN_METHOD(resetAllAchievementProgress, CAPPluginReturnPromise);
-    CAP_PLUGIN_METHOD(appleSignIn, CAPPluginReturnPromise);
 )
