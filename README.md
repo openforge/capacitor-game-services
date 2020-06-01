@@ -1,3 +1,8 @@
+## Required
+
+1. Google Developer Account
+2. Apple Developer Account
+
 ## Setting up Google Play Services
 
 1. Go to [Google Play Console](https://play.google.com/apps/publish).
