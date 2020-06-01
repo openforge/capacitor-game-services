@@ -1,7 +1,7 @@
 
   Pod::Spec.new do |s|
-    s.name = 'CapacitorGameServices'
-    s.version = '0.1.0'
+    s.name = 'OpenforgeCapacitorGameServices'
+    s.version = '0.3.0'
     s.summary = 'A native only plugin for googles play services library and apples game center library'
     s.license = 'MIT'
     s.homepage = 'https://github.com/openforge/capacitor-game-services'

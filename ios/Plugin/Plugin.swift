@@ -8,7 +8,7 @@ import Foundation
 
 import Capacitor
 import GameKit
-
+import AuthenticationServices
 
 @available(iOS 13.0, *)
 @objc(GameServices)
@@ -16,7 +16,7 @@ public class GameServices: CAPPlugin, GKGameCenterControllerDelegate {
     public func gameCenterViewControllerDidFinish(_ gameCenterViewController: GKGameCenterViewController) {
         gameCenterViewController.dismiss(animated: true, completion: nil)
     }
-    
+        
     @objc func signIn(_ call: CAPPluginCall) {
         let localPalyer = GKLocalPlayer.local
         
@@ -85,9 +85,6 @@ public class GameServices: CAPPlugin, GKGameCenterControllerDelegate {
             call.resolve(["result": successMessage])
         }
     }
-    
-    
-    
     
     @objc func unlockAchievement(_ call: CAPPluginCall) {
         print("unlockAchievement:called")
