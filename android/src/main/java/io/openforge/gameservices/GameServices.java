@@ -207,6 +207,12 @@ public class GameServices extends Plugin {
                 });
     }
 
+    @PluginMethod()
+    public void resetAllAchievementProgress(PluginCall call) {
+        Log.w(TAG, "iOS only method, reset achievements in play services console for Android.");
+        call.resolve();
+    }
+
     // MARK: Private Methods
 
     private void startSilentSignIn() {
