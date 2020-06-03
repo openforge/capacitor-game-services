@@ -29,7 +29,7 @@ public class GameServices extends Plugin {
     static final int RC_LEADERBOARD_UI = 9004;
     static final int RC_ACHIEVEMENT_UI = 9003;
 
-    private String TAG = "GameServices";
+    private final String TAG = "GameServices";
     private GoogleSignInOptions mGoogleSignInOptions;
 
     // MARK: Plugin Overrides
@@ -42,17 +42,17 @@ public class GameServices extends Plugin {
     }
 
     @Override
-    protected void handleOnActivityResult(int requestCode, int resultCode, Intent data) {
+    protected void handleOnActivityResult(final int requestCode, final int resultCode, final Intent data) {
         super.handleOnActivityResult(requestCode, resultCode, data);
         Log.d(TAG, "handleOnActivityResult called");
 
-        PluginCall savedCall = getSavedCall();
+        final PluginCall savedCall = getSavedCall();
 
         if (requestCode == RC_SIGN_IN) {
             Log.d(TAG, "starting handler for rc sign in");
-            GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
+            final GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
             if (result.isSuccess()) {
-                GoogleSignInAccount signInAccount = result.getSignInAccount();
+                final GoogleSignInAccount signInAccount = result.getSignInAccount();
                 this.registerPopupView(signInAccount);
                 savedCall.resolve();
             } else {
@@ -71,14 +71,14 @@ public class GameServices extends Plugin {
 
     // MARK: Plugin Methods
     @PluginMethod()
-    public void signIn(PluginCall call) {
+    public void signIn(final PluginCall call) {
         saveCall(call);
         startSilentSignIn();
     }
 
     @PluginMethod()
-    public void signOut(PluginCall call) {
-        GoogleSignInClient signInClient = GoogleSignIn.getClient(getContext(), mGoogleSignInOptions);
+    public void signOut(final PluginCall call) {
+        final GoogleSignInClient signInClient = GoogleSignIn.getClient(getContext(), mGoogleSignInOptions);
         signInClient.signOut().addOnCompleteListener(getActivity(), task -> {
             if (task.isSuccessful()) {
                 call.resolve(new JSObject().put("response", "signOut:success"));
@@ -92,19 +92,26 @@ public class GameServices extends Plugin {
      * TODO: if no leaderboardId (show ios default leaderboard if set, show android
      * all leaderboards)
      * 
-     * @param call
+     * @param call Capacitor plugin call
      */
     @PluginMethod()
-    public void showLeaderboard(PluginCall call) {
-        String leaderboardId = call.getString("leaderboardId");
+    public void showLeaderboard(final PluginCall call) {
+        final String leaderboardId = call.getString("leaderboardId");
         if (leaderboardId == null) {
             Log.w(TAG, "showLeaderboard called without providing leaderboardId");
             return;
         }
         Log.d(TAG, "showLeaderboard called with id: " + leaderboardId);
 
-        GoogleSignInAccount mGoogleSignInAccount = GoogleSignIn.getLastSignedInAccount(getContext());
-        Games.getLeaderboardsClient(getContext(), mGoogleSignInAccount).getLeaderboardIntent(leaderboardId)
+        final GoogleSignInAccount lastSignedInAccount = GoogleSignIn.getLastSignedInAccount(getContext());
+        if (null == lastSignedInAccount) {
+            Log.w(TAG,
+                    "cannot find last signed in account, either services are disabled or fingerprint doesn't match services account");
+            call.resolve();
+            return;
+        }
+
+        Games.getLeaderboardsClient(getContext(), lastSignedInAccount).getLeaderboardIntent(leaderboardId)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         Log.d(TAG, "showLeaderboard:getIntent:success");
@@ -122,16 +129,24 @@ public class GameServices extends Plugin {
      * not to mention, score can be non-integer values depending on game store and
      * leaderboard settings.
      * 
-     * @param call
+     * @param call Capacitor plugin call
      */
     @PluginMethod()
-    public void submitScore(PluginCall call) {
-        String leaderboardId = call.getString("leaderboardId", "");
-        int score = call.getInt("score", 0);
+    public void submitScore(final PluginCall call) {
+        final String leaderboardId = call.getString("leaderboardId", "");
+        final int score = call.getInt("score", 0);
         Log.d(TAG, String.format("submitScore:leaderboardId:%s:score:%d", leaderboardId, score));
 
-        Games.getLeaderboardsClient(getContext(), GoogleSignIn.getLastSignedInAccount(getContext()))
-                .submitScoreImmediate(leaderboardId, score).addOnSuccessListener(scoreSubmissionData -> {
+        final GoogleSignInAccount lastSignedInAccount = GoogleSignIn.getLastSignedInAccount(getContext());
+        if (null == lastSignedInAccount) {
+            Log.w(TAG,
+                    "cannot find last signed in account, either services are disabled or fingerprint doesn't match services account");
+            call.resolve();
+            return;
+        }
+
+        Games.getLeaderboardsClient(getContext(), lastSignedInAccount).submitScoreImmediate(leaderboardId, score)
+                .addOnSuccessListener(scoreSubmissionData -> {
                     Log.d(TAG, "submitScore:success");
                     call.resolve(new JSObject().put("result", "submitScore:success"));
                 }).addOnFailureListener(error -> {
@@ -141,11 +156,19 @@ public class GameServices extends Plugin {
     }
 
     @PluginMethod()
-    public void showAchievements(PluginCall call) {
+    public void showAchievements(final PluginCall call) {
         Log.d(TAG, "showAchievements:called");
 
-        Games.getAchievementsClient(getContext(), GoogleSignIn.getLastSignedInAccount(getContext()))
-                .getAchievementsIntent().addOnSuccessListener(intent -> {
+        final GoogleSignInAccount lastSignedInAccount = GoogleSignIn.getLastSignedInAccount(getContext());
+        if (null == lastSignedInAccount) {
+            Log.w(TAG,
+                    "cannot find last signed in account, either services are disabled or fingerprint doesn't match services account");
+            call.resolve();
+            return;
+        }
+
+        Games.getAchievementsClient(getContext(), lastSignedInAccount).getAchievementsIntent()
+                .addOnSuccessListener(intent -> {
                     saveCall(call);
                     Log.d(TAG, "showAchievements:success");
                     startActivityForResult(call, intent, RC_ACHIEVEMENT_UI);
@@ -159,15 +182,23 @@ public class GameServices extends Plugin {
      * Fails when trying to unlock a incremental achievement TODO: needs to respond
      * to all available errors in error responses
      * 
-     * @param call
+     * @param call Capacitor plugin call
      */
     @PluginMethod()
-    public void unlockAchievement(PluginCall call) {
-        String achievementId = call.getString("achievementId", "");
+    public void unlockAchievement(final PluginCall call) {
+        final String achievementId = call.getString("achievementId", "");
         Log.d(TAG, String.format("unlockAchievement:%s", achievementId));
 
-        Games.getAchievementsClient(getContext(), GoogleSignIn.getLastSignedInAccount(getContext()))
-                .unlockImmediate(achievementId).addOnCompleteListener(task -> {
+        final GoogleSignInAccount lastSignedInAccount = GoogleSignIn.getLastSignedInAccount(getContext());
+        if (null == lastSignedInAccount) {
+            Log.w(TAG,
+                    "cannot find last signed in account, either services are disabled or fingerprint doesn't match services account");
+            call.resolve();
+            return;
+        }
+
+        Games.getAchievementsClient(getContext(), lastSignedInAccount).unlockImmediate(achievementId)
+                .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         Log.d(TAG, "unlockAchievement:success");
                         call.resolve(new JSObject().put("response", "unlockAchievement:success"));
@@ -179,8 +210,8 @@ public class GameServices extends Plugin {
     }
 
     @PluginMethod()
-    public void progressAchievement(PluginCall call) {
-        String achievementId = call.getString("achievementId");
+    public void progressAchievement(final PluginCall call) {
+        final String achievementId = call.getString("achievementId");
         if (achievementId == null) {
             call.reject("progressAchievement:error: achievementId not provided");
             return;
@@ -188,13 +219,21 @@ public class GameServices extends Plugin {
         // TODO: does this need error handling when a number that looks like an integer
         // is passed, how
         // does capacitor number conversion work here?
-        double percentComplete = call.getDouble("achievementId", 100.0);
-        int stepsComplete = (int) Math.floor(percentComplete);
+        final double percentComplete = call.getDouble("achievementId", 100.0);
+        final int stepsComplete = (int) Math.floor(percentComplete);
         Log.d(TAG, String.format("progressAchievement:%s:percentage:%s", achievementId, stepsComplete));
 
+        final GoogleSignInAccount lastSignedInAccount = GoogleSignIn.getLastSignedInAccount(getContext());
+        if (null == lastSignedInAccount) {
+            Log.w(TAG,
+                    "cannot find last signed in account, either services are disabled or fingerprint doesn't match services account");
+            call.resolve();
+            return;
+        }
+
         // TODO: do math to get desired increment
-        Games.getAchievementsClient(getContext(), GoogleSignIn.getLastSignedInAccount(getContext()))
-                .setStepsImmediate(achievementId, stepsComplete).addOnCompleteListener(task -> {
+        Games.getAchievementsClient(getContext(), lastSignedInAccount).setStepsImmediate(achievementId, stepsComplete)
+                .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         String successMessage = task.getResult() ? "progressAchievement:success:unlocked"
                                 : "progressAchievement:success";
@@ -208,7 +247,7 @@ public class GameServices extends Plugin {
     }
 
     @PluginMethod()
-    public void resetAllAchievementProgress(PluginCall call) {
+    public void resetAllAchievementProgress(final PluginCall call) {
         Log.w(TAG, "iOS only method, reset achievements in play services console for Android.");
         call.resolve();
     }
@@ -216,9 +255,9 @@ public class GameServices extends Plugin {
     // MARK: Private Methods
 
     private void startSilentSignIn() {
-        GoogleSignInOptions signInOptions = mGoogleSignInOptions;
-        GoogleSignInClient signInClient = GoogleSignIn.getClient(getContext(), signInOptions);
-        PluginCall savedCall = getSavedCall();
+        final GoogleSignInOptions signInOptions = mGoogleSignInOptions;
+        final GoogleSignInClient signInClient = GoogleSignIn.getClient(getContext(), signInOptions);
+        final PluginCall savedCall = getSavedCall();
 
         signInClient.silentSignIn().addOnCompleteListener(getActivity(), (Task<GoogleSignInAccount> task) -> {
             if (task.isSuccessful()) {
@@ -234,14 +273,14 @@ public class GameServices extends Plugin {
 
     private void startSignInIntent() {
         Log.d(TAG, "startSignInIntent:called");
-        GoogleSignInClient signInClient = GoogleSignIn.getClient(getContext(), mGoogleSignInOptions);
-        Intent intent = signInClient.getSignInIntent();
+        final GoogleSignInClient signInClient = GoogleSignIn.getClient(getContext(), mGoogleSignInOptions);
+        final Intent intent = signInClient.getSignInIntent();
         startActivityForResult(null, intent, RC_SIGN_IN);
     }
 
-    private void registerPopupView(GoogleSignInAccount signInAccount) {
-        GamesClient gamesClient = Games.getGamesClient(this.getContext(), signInAccount);
-        WebView webView = this.getBridge().getWebView();
+    private void registerPopupView(final GoogleSignInAccount signInAccount) {
+        final GamesClient gamesClient = Games.getGamesClient(this.getContext(), signInAccount);
+        final WebView webView = this.getBridge().getWebView();
         gamesClient.setViewForPopups(webView);
     }
 }
