@@ -1,32 +1,23 @@
 package io.openforge.gameservices;
 
+import android.content.Intent;
+import android.util.Log;
+import android.webkit.WebView;
+
 import com.getcapacitor.JSObject;
 import com.getcapacitor.NativePlugin;
 import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
 import com.getcapacitor.PluginMethod;
-import android.content.Intent;
-import android.nfc.Tag;
-import android.util.Log;
-
-import androidx.annotation.NonNull;
-
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
-import com.google.android.gms.auth.api.Auth;
-
 import com.google.android.gms.games.Games;
-import com.google.android.gms.games.leaderboard.ScoreSubmissionData;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.games.GamesClient;
 import com.google.android.gms.tasks.Task;
-
-import io.openforge.gameservices.capacitorgameservices.R;
 
 /**
  * GameServices plugin
@@ -61,6 +52,8 @@ public class GameServices extends Plugin {
             Log.d(TAG, "starting handler for rc sign in");
             GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
             if (result.isSuccess()) {
+                GoogleSignInAccount signInAccount = result.getSignInAccount();
+                this.registerPopupView(signInAccount);
                 savedCall.resolve();
             } else {
                 String message = result.getStatus().getStatusMessage();
@@ -224,6 +217,7 @@ public class GameServices extends Plugin {
         signInClient.silentSignIn().addOnCompleteListener(getActivity(), (Task<GoogleSignInAccount> task) -> {
             if (task.isSuccessful()) {
                 GoogleSignInAccount signedInAccount = task.getResult();
+                this.registerPopupView(signedInAccount);
                 savedCall.resolve();
             } else {
                 startSignInIntent();
@@ -237,5 +231,11 @@ public class GameServices extends Plugin {
         GoogleSignInClient signInClient = GoogleSignIn.getClient(getContext(), mGoogleSignInOptions);
         Intent intent = signInClient.getSignInIntent();
         startActivityForResult(null, intent, RC_SIGN_IN);
+    }
+
+    private void registerPopupView(GoogleSignInAccount signInAccount) {
+        GamesClient gamesClient = Games.getGamesClient(this.getContext(), signInAccount);
+        WebView webView = this.getBridge().getWebView();
+        gamesClient.setViewForPopups(webView);
     }
 }
