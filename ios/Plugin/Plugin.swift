@@ -129,6 +129,7 @@ public class GameServices: CAPPlugin, GKGameCenterControllerDelegate {
         print("[GameServices] Setting Achievement Percentage \(progressComplete)")
                         
         let newAchievement = GKAchievement(identifier: achievementId)
+        newAchievement.showsCompletionBanner = true
         newAchievement.percentComplete = progressComplete
         
         GKAchievement.report([newAchievement]) { error in
