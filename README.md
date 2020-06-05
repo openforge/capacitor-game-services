@@ -29,7 +29,6 @@
 5. Click Save and Continue, then click "authorize your app now" button.
 6. Enter your sha-1 and confirm
 7. [Add manifest configuration](https://developers.google.com/games/services/android/quickstart#step_3_modify_your_code)
-   TODO: add to plugin instead?
 8. Go to testing tab and add test account.
 9. Add the plugin to main activity after running npx cap sync
 
