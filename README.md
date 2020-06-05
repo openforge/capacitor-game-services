@@ -1,3 +1,28 @@
+<p align="center">
+  <img src="https://github.com/openforge/main-website/blob/master/src/assets/logo-openforge.png?raw=true"/>
+</p>
+<p align="center">
+  <a href="http://www.openforge.io/">Official Website</a> |
+  <a href="http://www.openforge.io/opportunities">Opportunities</a> |
+  <a href="https://www.facebook.com/openforgemobile/">Facebook</a>
+</p>
+
+<h3 align="center">
+  Leading By Example.
+</h3>
+
+<p align="center">
+  Working with the latest technologies, designing the best products, and sharing our knowledge with the world wide community.
+</p>
+
+# OpenForge
+
+The OpenForge Community is composed of team members and public contributors banded together for a common goal of leading by example.  We are experts in applying UI/UX and Software Architecture principles towards enhancing businesses nation (and world!) wide.
+
+In addition to providing services for our clients; it is our belief that we should also focus on benefiting the community that surrounds us. For this reason; all OpenForge initiatives (that are not client related) are Open Sourced; including our design and business consulting resources which can be found on our Website at [www.openforge.io](http://openforge.io). 
+
+If you are a community member who would like to take part of our paid (yes, we said PAID!) Open Source contributions please reach out to us via our [opportunities page](http://www.openforge.io/opportunities).   We also always encourage anyone to contribute to anything we are doing, and we hope to contribute to your projects as well!
+
 ## Required
 
 1. Google Developer Account
