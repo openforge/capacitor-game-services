@@ -28,7 +28,8 @@
 4. Enter your appId, should be found in your capacitor.config.json file.
 5. Click Save and Continue, then click "authorize your app now" button.
 6. Enter your sha-1 and confirm
-7. [Add manifest configuration](https://developers.google.com/games/services/android/quickstart#step_3_modify_your_code)
+7. In your native android project, add your app id string to your strings xml file.
+    - your strings xml file can be found in android/app/src/main/res/values/strings.xml
 8. Go to testing tab and add test account.
 9. Add the plugin to main activity after running npx cap sync
 
