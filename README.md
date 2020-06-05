@@ -29,16 +29,17 @@
 5. Click Save and Continue, then click "authorize your app now" button.
 6. Enter your sha-1 and confirm
 7. [Add manifest configuration](https://developers.google.com/games/services/android/quickstart#step_3_modify_your_code)
-   TODO: add to plugin instead?
 8. Go to testing tab and add test account.
-9. Go to leaderboards and add a leaderboard, copying the id value.
-10. Add the plugin to main activity after running npx cap sync
+9. Add the plugin to main activity after running npx cap sync
 
 ## Setting up Apple Game Services
 
 1. Click on target app in xcode
 2. Add team to signing and capabilities
 3. Add game center capability
-4. https://appstoreconnect.apple.com/
-5. add app, probably should use bundle id as sku
-6. go to features, add leaderboard matching the generated id from google
+4. Go to your apps in https://appstoreconnect.apple.com/ and add your application
+5. go to features, add leaderboard matching the generated id from google
+
+## Adding Leaderboards and Achievements
+
+When adding resouces to Google and Apple services, we would recommend you add resources to Google's Play Services first, and reuse the id values generated for resources in Apple's Game Center service. That way you wont need two sets of resource id's.
