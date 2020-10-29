@@ -1,11 +1,4 @@
-//
-//  GameServices.swift
-//  App
-//
-//
-
 import Foundation
-
 import Capacitor
 import GameKit
 import AuthenticationServices
@@ -13,56 +6,84 @@ import AuthenticationServices
 @available(iOS 13.0, *)
 @objc(GameServices)
 public class GameServices: CAPPlugin, GKGameCenterControllerDelegate {
+    var call: CAPPluginCall?
+
     public func gameCenterViewControllerDidFinish(_ gameCenterViewController: GKGameCenterViewController) {
         gameCenterViewController.dismiss(animated: true, completion: nil)
     }
         
     @objc func signIn(_ call: CAPPluginCall) {
+        self.call = call
         let localPalyer = GKLocalPlayer.local
         
         localPalyer.authenticateHandler = { vc, error in
-            guard error == nil else {
-                return
-            }
+            // If the local player isn’tt signed in to Game Center on the device, GameKit passes a view controller
+            // that implements the sign-in interface that you present to the player.
             if let vc = vc {
-                // TODO: test if this needs to be wrapped more broadly in order to run properly, hard to test without signout method!
                 DispatchQueue.main.async {
                     self.bridge.viewController.present(vc, animated: true)
                 }
             } else if localPalyer.isAuthenticated {
-                print("[GameServices] local player is authenticated")
-                
+                // If the player successfully signs in, GameKit sets the local player’s isAuthenticated property to true
+                // and calls the handler again, this time passing nil for both the view controller and error parameters.
+                if (vc == nil && error == nil) {
+                    print("[GameServices] local player is authenticated")
+                    let result = [
+                        "response": [
+                            "player_name": localPalyer.displayName,
+                            "player_id": localPalyer.gamePlayerID,
+                        ]
+                    ]
+                    call.resolve(result as PluginResultData)
+                }
             } else {
-                // error
+                // If the player decides not to sign in or create a Game Center account, GameKit sets the local player’s 
+                // isAuthenticated property to false and calls the handler again by passing an error that indicates
+                // the reason the player isn’t authenticated. In this case, disable Game Center in your game.
+                call.reject("[GameServices] local player is not authenticated")
             }
         }
     }
     
     @objc func showLeaderboard(_ call: CAPPluginCall) {
+        self.call = call
+        let result = [
+            "response": []
+        ]
         DispatchQueue.main.async {
             let vc = GKGameCenterViewController()
             vc.gameCenterDelegate = self
             vc.viewState = .leaderboards
             vc.leaderboardIdentifier = call.getString("leaderboardId")
             self.bridge.viewController.present(vc, animated: true, completion: {() -> Void in
-                call.resolve(["result": "[GameServices] Achievement is about to present"])
+                print("[GameServices] Achievement is about to present")
+                call.resolve(result as PluginResultData)
             })
         }
     }
     
     @objc func showAchievements(_ call: CAPPluginCall) {
+        self.call = call
+        let result = [
+            "response": []
+        ]
         print("[GameServices] Showing Achievements")
         DispatchQueue.main.async {
             let vc = GKGameCenterViewController()
             vc.gameCenterDelegate = self;
             vc.viewState = .achievements
             self.bridge.viewController.present(vc, animated: true, completion: {() -> Void in
-                call.resolve(["result": "[GameServices] Achievement is about to present"])
+                print("[GameServices] Achievement is about to present")
+                call.resolve(result as PluginResultData)
             })
         }
     }
     
     @objc func submitScore(_ call: CAPPluginCall) {
+        self.call = call
+        let result = [
+            "response": []
+        ]
         // default not working!!!
         let leaderboardId = call.getString("leaderboardId") ?? "testLeaderboard" // for these defaults, have a default leaderboard set here? instead of setting a players default leaderboard??
         
@@ -82,7 +103,7 @@ public class GameServices: CAPPlugin, GKGameCenterControllerDelegate {
             }
             let successMessage = "[GameServices] Report Score Success"
             print(successMessage)
-            call.resolve(["result": successMessage])
+            call.resolve(result as PluginResultData)
         }
     }
     
@@ -97,6 +118,10 @@ public class GameServices: CAPPlugin, GKGameCenterControllerDelegate {
     }
     
     @objc func resetAllAchievementProgress(_ call: CAPPluginCall) {
+        self.call = call
+        let result = [
+            "response": []
+        ]
         print("resetAllAchievementProgress:called")
         
         GKAchievement.resetAchievements(completionHandler: { error in
@@ -107,7 +132,7 @@ public class GameServices: CAPPlugin, GKGameCenterControllerDelegate {
                 return
             }
             print("[GameServices] Reset Achievement Called")
-            call.resolve()
+            call.resolve(result as PluginResultData)
         })
     }
     
@@ -123,6 +148,10 @@ public class GameServices: CAPPlugin, GKGameCenterControllerDelegate {
 
      */
     private func progressAchievementDelegate(_ call: CAPPluginCall, _ percentComplete: Double?) {
+        self.call = call
+        let result = [
+            "response": []
+        ]
         let achievementId = call.getString("achievementId") ?? "";
         let progressComplete = percentComplete ?? 100.0
         
@@ -140,7 +169,7 @@ public class GameServices: CAPPlugin, GKGameCenterControllerDelegate {
             }
             let successMessage = "[GameServices] Achievement Progress Was Reported"
             print(successMessage)
-            call.resolve(["result": successMessage])
+            call.resolve(result as PluginResultData)
         }
     }
 }

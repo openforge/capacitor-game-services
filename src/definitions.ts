@@ -5,7 +5,10 @@ declare module "@capacitor/core" {
 }
 
 export interface GameServicesPlugin {
-  signIn(): Promise<any>;
+  signIn(): Promise<{
+    player_name: any,
+    player_id: any
+  }>;
   signOut(): Promise<any>;
   showLeaderboard(options: { leaderboardId: string }): Promise<any>;
   submitScore(options: {

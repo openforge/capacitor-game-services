@@ -38,7 +38,10 @@ public class GameServices extends Plugin {
         super.load();
         Log.d(TAG, "lifecycle load called");
 
-        mGoogleSignInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_GAMES_SIGN_IN).build();
+        mGoogleSignInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_GAMES_SIGN_IN)
+                .requestEmail()
+                .requestProfile()
+                .build();
     }
 
     @Override
@@ -54,13 +57,19 @@ public class GameServices extends Plugin {
             if (result.isSuccess()) {
                 final GoogleSignInAccount signInAccount = result.getSignInAccount();
                 this.registerPopupView(signInAccount);
-                savedCall.resolve();
+                JSObject ret = new JSObject();
+                Games.getPlayersClient(getContext(), signInAccount).getCurrentPlayer().addOnCompleteListener(task -> {
+                    ret.put("player_name", task.getResult().getDisplayName());
+                    ret.put("player_id", task.getResult().getPlayerId());
+                    savedCall.resolve(ret);
+                });
             } else {
                 String message = result.getStatus().getStatusMessage();
                 if (message == null || message.isEmpty()) {
                     message = "Some Other Error....";
                 }
-                Log.e(TAG, "signInWithIntent:failure " + message);
+                Integer code = result.getStatus().getStatusCode();
+                Log.e(TAG, "signInWithIntent:failure " + message + " " + code.toString());
                 if (savedCall != null) {
                     savedCall.reject(message);
                 }
@@ -72,6 +81,7 @@ public class GameServices extends Plugin {
     // MARK: Plugin Methods
     @PluginMethod()
     public void signIn(final PluginCall call) {
+        Log.d(TAG, "signIn called");
         saveCall(call);
         startSilentSignIn();
     }
@@ -91,7 +101,7 @@ public class GameServices extends Plugin {
     /**
      * TODO: if no leaderboardId (show ios default leaderboard if set, show android
      * all leaderboards)
-     * 
+     *
      * @param call Capacitor plugin call
      */
     @PluginMethod()
@@ -128,7 +138,7 @@ public class GameServices extends Plugin {
      * TODO: test and handle/throw errors for non integer values passed to score,
      * not to mention, score can be non-integer values depending on game store and
      * leaderboard settings.
-     * 
+     *
      * @param call Capacitor plugin call
      */
     @PluginMethod()
@@ -150,9 +160,9 @@ public class GameServices extends Plugin {
                     Log.d(TAG, "submitScore:success");
                     call.resolve(new JSObject().put("result", "submitScore:success"));
                 }).addOnFailureListener(error -> {
-                    Log.e(TAG, String.format("submitScore:error:%s", error.getMessage()));
-                    call.reject(String.format("submitScore:error:%s", error.getMessage()));
-                });
+            Log.e(TAG, String.format("submitScore:error:%s", error.getMessage()));
+            call.reject(String.format("submitScore:error:%s", error.getMessage()));
+        });
     }
 
     @PluginMethod()
@@ -173,15 +183,15 @@ public class GameServices extends Plugin {
                     Log.d(TAG, "showAchievements:success");
                     startActivityForResult(call, intent, RC_ACHIEVEMENT_UI);
                 }).addOnFailureListener(error -> {
-                    Log.e(TAG, "showAchievements:error:" + error.getMessage());
-                    call.reject("showAchievements:error:" + error.getMessage());
-                });
+            Log.e(TAG, "showAchievements:error:" + error.getMessage());
+            call.reject("showAchievements:error:" + error.getMessage());
+        });
     }
 
     /**
      * Fails when trying to unlock a incremental achievement TODO: needs to respond
      * to all available errors in error responses
-     * 
+     *
      * @param call Capacitor plugin call
      */
     @PluginMethod()
@@ -261,10 +271,18 @@ public class GameServices extends Plugin {
 
         signInClient.silentSignIn().addOnCompleteListener(getActivity(), (Task<GoogleSignInAccount> task) -> {
             if (task.isSuccessful()) {
+                Log.d(TAG, "startSilentSignIn success");
                 GoogleSignInAccount signedInAccount = task.getResult();
                 this.registerPopupView(signedInAccount);
-                savedCall.resolve();
+                JSObject ret = new JSObject();
+                Games.getPlayersClient(getContext(), signedInAccount).getCurrentPlayer().addOnCompleteListener(task2 -> {
+                    ret.put("player_name", task2.getResult().getDisplayName());
+                    ret.put("player_id", task2.getResult().getPlayerId());
+                    savedCall.resolve(ret);
+                });
             } else {
+                Log.d(TAG, "startSilentSignIn error");
+                Log.d(TAG, task.getException().getMessage());
                 startSignInIntent();
             }
         });
