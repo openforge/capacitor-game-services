@@ -57,11 +57,13 @@ public class GameServices extends Plugin {
             if (result.isSuccess()) {
                 final GoogleSignInAccount signInAccount = result.getSignInAccount();
                 this.registerPopupView(signInAccount);
-                JSObject ret = new JSObject();
-                Games.getPlayersClient(getContext(), signInAccount).getCurrentPlayer().addOnCompleteListener(task -> {
-                    ret.put("player_name", task.getResult().getDisplayName());
-                    ret.put("player_id", task.getResult().getPlayerId());
-                    savedCall.resolve(ret);
+                Games.getPlayersClient(getContext(), signInAccount).getCurrentPlayer().addOnCompleteListener(playerClientTask -> {
+                    JSObject response = new JSObject();
+                    JSObject responseData = new JSObject();
+                    responseData.put("player_name", playerClientTask.getResult().getDisplayName());
+                    responseData.put("player_id", playerClientTask.getResult().getPlayerId());
+                    response.put("response", responseData);
+                    savedCall.resolve(response);
                 });
             } else {
                 String message = result.getStatus().getStatusMessage();
@@ -274,11 +276,13 @@ public class GameServices extends Plugin {
                 Log.d(TAG, "startSilentSignIn success");
                 GoogleSignInAccount signedInAccount = task.getResult();
                 this.registerPopupView(signedInAccount);
-                JSObject ret = new JSObject();
-                Games.getPlayersClient(getContext(), signedInAccount).getCurrentPlayer().addOnCompleteListener(task2 -> {
-                    ret.put("player_name", task2.getResult().getDisplayName());
-                    ret.put("player_id", task2.getResult().getPlayerId());
-                    savedCall.resolve(ret);
+                Games.getPlayersClient(getContext(), signedInAccount).getCurrentPlayer().addOnCompleteListener(playerClientTask -> {
+                    JSObject response = new JSObject();
+                    JSObject responseData = new JSObject();
+                    responseData.put("player_name", playerClientTask.getResult().getDisplayName());
+                    responseData.put("player_id", playerClientTask.getResult().getPlayerId());
+                    response.put("response", responseData);
+                    savedCall.resolve(response);
                 });
             } else {
                 Log.d(TAG, "startSilentSignIn error");
