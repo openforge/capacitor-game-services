@@ -8,7 +8,8 @@ export interface GameServicesPlugin {
   signIn(): Promise<{
     response: {
       player_name: any,
-      player_id: any
+      player_id: any,
+      error?: any
     }
   }>;
   signOut(): Promise<any>;

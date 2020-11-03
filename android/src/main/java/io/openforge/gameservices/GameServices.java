@@ -67,15 +67,15 @@ public class GameServices extends Plugin {
                 });
             } else {
                 String message = result.getStatus().getStatusMessage();
-                if (message == null || message.isEmpty()) {
-                    message = "Some Other Error....";
-                }
                 Integer code = result.getStatus().getStatusCode();
                 Log.e(TAG, "signInWithIntent:failure " + message + " " + code.toString());
                 if (savedCall != null) {
-                    savedCall.reject(message);
+                    JSObject response = new JSObject();
+                    JSObject responseData = new JSObject();
+                    responseData.put("error", "Error while trying to sign in");
+                    response.put("response", responseData);
+                    savedCall.resolve(response);
                 }
-
             }
         }
     }
@@ -290,7 +290,6 @@ public class GameServices extends Plugin {
                 startSignInIntent();
             }
         });
-
     }
 
     private void startSignInIntent() {
