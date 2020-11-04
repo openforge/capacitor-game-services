@@ -44,3 +44,38 @@
 ## Adding Leaderboards and Achievements
 
 When adding resouces to Google and Apple services, we would recommend you add resources to Google's Play Services first, and reuse the id values generated for resources in Apple's Game Center service. That way you wont need two sets of resource id's.
+
+## Using the plugin
+
+In order to use the plugin, you need to follow this steps:
+
+- Include this meta data tags in the main manifest
+
+```xml
+<meta-data android:name="com.google.android.gms.games.APP_ID" android:value="@string/app_id" />
+<meta-data android:name="com.google.android.gms.version" android:value="@integer/google_play_services_version"/>
+```
+
+- Add on build gradle (app):
+
+```any
+implementation 'com.google.android.gms:play-services-auth:17.0.0'
+implementation 'com.google.android.gms:play-services-games:19.0.0'
+```
+
+- On the Main Activy add:
+
+```android
+import io.openforge.gameservices.GameServices;
+...
+add(GameServices.class);
+...
+```
+
+Once all this steps are done, you just need to call the sign method of the plugin.
+
+```ts
+import { Plugins } from '@capacitor/core';
+const { GameServices } = Plugins;
+const data = await GameServices.signIn();
+```
