@@ -1,11 +1,11 @@
 import { WebPlugin } from '@capacitor/core';
-import { GameServicesPlugin } from './definitions';
+import { GameServices } from './definitions';
 
-export class GameServicesWeb extends WebPlugin implements GameServicesPlugin {
+export class GameServicesWeb extends WebPlugin implements GameServices {
   constructor() {
     super({
       name: 'GameServices',
-      platforms: ['web']
+      platforms: ['web'],
     });
   }
 
@@ -17,14 +17,11 @@ export class GameServicesWeb extends WebPlugin implements GameServicesPlugin {
     console.warn('GameServices does not have web implementation.');
     return Promise.resolve();
   }
-  showLeaderboard(_: { leaderboardId: string; }): Promise<any> {
+  showLeaderboard(_: { leaderboardId: string }): Promise<any> {
     console.warn('GameServices does not have web implementation.');
     return Promise.resolve();
   }
-  submitScore(_: {
-    leaderboardId: string;
-    score: number;
-  }): Promise<any> {
+  submitScore(_: { leaderboardId: string; score: number }): Promise<any> {
     console.warn('GameServices does not have web implementation.');
     return Promise.resolve();
   }
@@ -32,14 +29,13 @@ export class GameServicesWeb extends WebPlugin implements GameServicesPlugin {
     console.warn('GameServices does not have web implementation.');
     return Promise.resolve();
   }
-  unlockAchievement(_: {
-    achievementId: string;
-  }): Promise<any> {
+  unlockAchievement(_: { achievementId: string }): Promise<any> {
     console.warn('GameServices does not have web implementation.');
     return Promise.resolve();
   }
   progressAchievement(_: {
-    achievementId: string; percentComplete: number;
+    achievementId: string;
+    percentComplete: number;
   }): Promise<any> {
     console.warn('GameServices does not have web implementation.');
     return Promise.resolve();
@@ -54,9 +50,7 @@ export class GameServicesWeb extends WebPlugin implements GameServicesPlugin {
   }
 }
 
-const GameServices = new GameServicesWeb();
+import { registerPlugin } from '@capacitor/core';
+const GameServicesPlugin = registerPlugin('GameServicesPlugin');
 
-export { GameServices };
-
-import { registerWebPlugin } from '@capacitor/core';
-registerWebPlugin(GameServices);
+export default GameServicesPlugin;

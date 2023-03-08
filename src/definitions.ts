@@ -1,10 +1,4 @@
-declare module "@capacitor/core" {
-  interface PluginRegistry {
-    GameServices: GameServicesPlugin;
-  }
-}
-
-export interface GameServicesPlugin {
+export interface GameServices {
   signIn(): Promise<{
     response: {
       player_name: any,

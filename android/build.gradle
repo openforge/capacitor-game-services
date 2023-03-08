@@ -7,10 +7,10 @@ ext {
 buildscript {
     repositories {
         google()
-        jcenter()
+        mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.6.1'
+        classpath 'com.android.tools.build:gradle:7.2.1'
     }
 }
 
@@ -42,7 +42,6 @@ android {
 
 repositories {
     google()
-    jcenter()
     mavenCentral()
 }
 
@@ -59,3 +58,4 @@ dependencies {
     implementation 'com.google.android.gms:play-services-auth:17.0.0'
     implementation 'com.google.android.gms:play-services-games:19.0.0'
 }
+

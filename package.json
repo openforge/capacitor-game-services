@@ -13,13 +13,15 @@
   "author": "OpenForge",
   "license": "MIT",
   "dependencies": {
-    "@capacitor/core": "latest"
+    "@capacitor/core": "^4.0.0"
   },
   "devDependencies": {
-    "rimraf": "^3.0.0",
-    "typescript": "^3.2.4",
-    "@capacitor/ios": "latest",
-    "@capacitor/android": "latest"
+    "@capacitor/android": "^4.0.0",
+    "@capacitor/cli": "^4.0.0",
+    "@capacitor/ios": "^4.0.0",
+    "@types/node": "^18.14.6",
+    "rimraf": "^4.3.1",
+    "typescript": "^4.9.5"
   },
   "files": [
     "dist/",
