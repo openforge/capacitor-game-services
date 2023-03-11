@@ -2,12 +2,6 @@ import { WebPlugin } from '@capacitor/core';
 import { GameServices } from './definitions';
 
 export class GameServicesWeb extends WebPlugin implements GameServices {
-  constructor() {
-    super({
-      name: 'GameServices',
-      platforms: ['web'],
-    });
-  }
 
   signIn(): Promise<any> {
     console.warn('GameServices does not have web implementation.');
