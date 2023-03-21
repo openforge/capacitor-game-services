@@ -1,24 +1,23 @@
-export interface GameServices {
+export interface GameServicesPlugin {
   signIn(): Promise<{
     response: {
-      player_name: any,
-      player_id: any,
-      error?: any
-    }
+      player_name: any;
+      player_id: any;
+      error?: any;
+    };
   }>;
   signOut(): Promise<any>;
   showLeaderboard(options: { leaderboardId: string }): Promise<any>;
   submitScore(options: {
-    leaderboardId: string,
+    leaderboardId: string;
     /**
      * expects type integer, TODO: math floor in ios and android plugins
      * what does getInt do in capacitor plugin if a double or other is supplied
      */
-    score: number
+    score: number;
   }): Promise<any>;
 
   showAchievements(): Promise<any>;
-
 
   /**
    * Unlock Achievement

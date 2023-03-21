@@ -1,8 +1,7 @@
 import { WebPlugin } from '@capacitor/core';
-import { GameServices } from './definitions';
+import { GameServicesPlugin } from './definitions';
 
-export class GameServicesWeb extends WebPlugin implements GameServices {
-
+export class GameServicesWeb extends WebPlugin implements GameServicesPlugin {
   signIn(): Promise<any> {
     console.warn('GameServices does not have web implementation.');
     return Promise.resolve();
@@ -43,8 +42,3 @@ export class GameServicesWeb extends WebPlugin implements GameServices {
     return Promise.resolve();
   }
 }
-
-import { registerPlugin } from '@capacitor/core';
-const GameServicesPlugin = registerPlugin('GameServicesPlugin');
-
-export default GameServicesPlugin;
