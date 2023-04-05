@@ -15,6 +15,9 @@
   Working with the latest technologies, designing the best products, and sharing our knowledge with the world wide community.
 </p>
 
+## Installation
+Run `npm install @openforge/capacitor-game-services`
+
 ## Required
 
 1. Google Developer Account
@@ -75,7 +78,6 @@ add(GameServices.class);
 Once all this steps are done, you just need to call the sign method of the plugin.
 
 ```ts
-import { Plugins } from '@capacitor/core';
-const { GameServices } = Plugins;
-const data = await GameServices.signIn();
+import { GameServices } from '@openforge/capacitor-game-services';
+await GameServices.signIn();
 ```
