@@ -35,20 +35,9 @@ public class GameServices: CAPPlugin, GKGameCenterControllerDelegate {
     }
     
     @objc func showLeaderboard(_ call: CAPPluginCall) {
-        self.call = call
-        let result = [
-            "response": []
-        ]
-        DispatchQueue.main.async {
-            let vc = GKGameCenterViewController()
-            vc.gameCenterDelegate = self
-            vc.viewState = .leaderboards
-            vc.leaderboardIdentifier = call.getString("leaderboardId")
-            self.bridge?.viewController?.present(vc, animated: true, completion: {() -> Void in
-                print("[GameServices] Achievement is about to present")
-                call.resolve(result as PluginCallResultData)
-            })
-        }
+        let viewController = GKGameCenterViewController(leaderboardID: "openforge.rockthesteps.ios", playerScope: .global, timeScope: .allTime);
+        viewController.gameCenterDelegate = self;
+        present(viewController, animated: true, completion: nil);
     }
     
     @objc func showAchievements(_ call: CAPPluginCall) {
@@ -70,29 +59,47 @@ public class GameServices: CAPPlugin, GKGameCenterControllerDelegate {
     
     @objc func submitScore(_ call: CAPPluginCall) {
         self.call = call
-        let result = [
-            "response": []
-        ]
-        // default not working!!!
-        let leaderboardId = call.getString("leaderboardId") ?? "testLeaderboard" // for these defaults, have a default leaderboard set here? instead of setting a players default leaderboard??
         
-        // TODO: is there any additional error handling here?
-        let score = Int64(call.getInt("score") ?? 0) // TODO: test what happens when expects an Integer but gets booleans, or even a string
-        print("[GameServices] Sumbitting Score \(score) to leaderboard id \(leaderboardId)")
+        let leaderboardId = call.getString("leaderboardId") // Property to get the leaderboard ID
+        let score = Int64(call.getInt("score") ?? 0) // Property to get the total score to submit
         
-        let newScore = GKScore(leaderboardIdentifier: leaderboardId)
-        newScore.value = score
+        if GKLocalPlayer.localPlayer().authenticated {
+            let gkScore = GKScore(leaderboardIdentifier: "leaderBoardID")
+            gkScore.value = score
+            GKScore.reportScores([gkScore], withCompletionHandler: ( { (error: NSError!) -> Void in
+                if (error != nil) {
+                    // Handle the error
+                    println("Error: " + error.localizedDescription);
+                    call.reject("Error submiting score", error)
+                } else {
+                    println("Score submitted: \(gkScore.value)")
+                    call.resolve()
+                }
+            }))
+        }
+    }
+    
+    @objc func getUserScore(_ call: CAPPluginCall) {
+        self.call = call
         
-        GKScore.report([newScore]) { error in
-            guard error == nil else {
-                let errorMessage = "[GameServices] \(error?.localizedDescription ?? "")"
-                print(errorMessage)
-                call.reject(errorMessage)
-                return
+        let leaderboardID = call.getString("leaderboardId") // Property to get the leaderboard
+        
+        let leaderboard = GKLeaderboard(players: nil)
+        leaderboard.playerScope = .global
+        leaderboard.timeScope = .allTime
+        leaderboard.identifier = leaderboardID
+        leaderboard.range = NSRange(location: 1, length: 1)
+        
+        leaderboard.loadEntries { (scores, error) in
+            if let error = error {
+                call.reject("Failed to load the entries for the leaderboards", error.localizedDescription)
+            } else if let scores = scores {
+                if let topScore = scores.first {
+                    let totalScore = topScore.value
+                    print("Total score: \(totalScore)")
+                    call.resolve(totalScore)
+                }
             }
-            let successMessage = "[GameServices] Report Score Success"
-            print(successMessage)
-            call.resolve(result as PluginCallResultData)
         }
     }
     
