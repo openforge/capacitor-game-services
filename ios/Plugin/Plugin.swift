@@ -35,9 +35,15 @@ public class GameServices: CAPPlugin, GKGameCenterControllerDelegate {
     }
     
     @objc func showLeaderboard(_ call: CAPPluginCall) {
-        let viewController = GKGameCenterViewController(leaderboardID: "openforge.rockthesteps.ios", playerScope: .global, timeScope: .allTime);
-        viewController.gameCenterDelegate = self;
-        present(viewController, animated: true, completion: nil);
+        DispatchQueue.main.async {
+            self.call = call
+            let leaderboardViewController = GKGameCenterViewController()
+            leaderboardViewController.viewState = .leaderboards
+            leaderboardViewController.leaderboardIdentifier = "openforge.rockthesteps.leaderboard.io"
+            leaderboardViewController.gameCenterDelegate = self
+            leaderboardViewController.leaderboardTimeScope = .allTime
+            self.bridge?.viewController?.present(leaderboardViewController, animated: true, completion: nil)
+        }
     }
     
     @objc func showAchievements(_ call: CAPPluginCall) {
@@ -63,45 +69,40 @@ public class GameServices: CAPPlugin, GKGameCenterControllerDelegate {
         let leaderboardId = call.getString("leaderboardId") // Property to get the leaderboard ID
         let score = Int64(call.getInt("score") ?? 0) // Property to get the total score to submit
         
-        if GKLocalPlayer.localPlayer().authenticated {
+        if GKLocalPlayer.local.isAuthenticated {
             let gkScore = GKScore(leaderboardIdentifier: "leaderBoardID")
             gkScore.value = score
-            GKScore.reportScores([gkScore], withCompletionHandler: ( { (error: NSError!) -> Void in
-                if (error != nil) {
-                    // Handle the error
-                    println("Error: " + error.localizedDescription);
-                    call.reject("Error submiting score", error)
-                } else {
-                    println("Score submitted: \(gkScore.value)")
-                    call.resolve()
-                }
-            }))
-        }
-    }
-    
-    @objc func getUserScore(_ call: CAPPluginCall) {
-        self.call = call
-        
-        let leaderboardID = call.getString("leaderboardId") // Property to get the leaderboard
-        
-        let leaderboard = GKLeaderboard(players: nil)
-        leaderboard.playerScope = .global
-        leaderboard.timeScope = .allTime
-        leaderboard.identifier = leaderboardID
-        leaderboard.range = NSRange(location: 1, length: 1)
-        
-        leaderboard.loadEntries { (scores, error) in
-            if let error = error {
-                call.reject("Failed to load the entries for the leaderboards", error.localizedDescription)
-            } else if let scores = scores {
-                if let topScore = scores.first {
-                    let totalScore = topScore.value
-                    print("Total score: \(totalScore)")
-                    call.resolve(totalScore)
-                }
+            if #available(iOS 14.0, *) {
+                GKLeaderboard.submitScore(Int(score), context: 0, player: GKLocalPlayer.local, leaderboardIDs: ["openforge.rockthesteps.leaderboard.io"]) { error in call.reject("error submiting score")}
+            } else {
+                // Fallback on earlier versions
             }
         }
     }
+    
+//    @objc func getUserScore(_ call: CAPPluginCall) {
+//        self.call = call
+//
+//        let leaderboardID = call.getString("leaderboardId") // Property to get the leaderboard
+//
+//        let leaderboard = GKLeaderboard(players: nil)
+//        leaderboard.playerScope = .global
+//        leaderboard.timeScope = .allTime
+//        leaderboard.identifier = leaderboardID
+//        leaderboard.range = NSRange(location: 1, length: 1)
+//
+//        leaderboard.loadEntries { (scores, error) in
+//            if let error = error {
+//                call.reject("Failed to load the entries for the leaderboards", error.localizedDescription)
+//            } else if let scores = scores {
+//                if let topScore = scores.first {
+//                    let totalScore = topScore.value
+//                    print("Total score: \(totalScore)")
+//                    call.resolve(totalScore)
+//                }
+//            }
+//        }
+//    }
     
     @objc func unlockAchievement(_ call: CAPPluginCall) {
         print("unlockAchievement:called")
