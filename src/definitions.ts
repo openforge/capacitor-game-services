@@ -4,10 +4,8 @@ export interface GameServicesPlugin {
    *
    */
   signIn(): Promise<{
-    response: {
-      player_name: string;
-      player_id: string;
-    };
+    player_name: string;
+    player_id: string;
   }>;
 
   /**

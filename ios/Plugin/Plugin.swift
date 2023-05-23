@@ -20,10 +20,8 @@ public class GameServices: CAPPlugin, GKGameCenterControllerDelegate {
             if localPlayer.isAuthenticated {
                 print("User is authenticated to Game Center!")
                 let result = [
-                    "response": [
-                        "player_name": localPlayer.displayName,
-                        "player_id": localPlayer.gamePlayerID
-                    ]
+                    "player_name": localPlayer.displayName,
+                    "player_id": localPlayer.gamePlayerID
                 ]
                 call.resolve(result)
             } else if gcAuthVC != nil {
@@ -35,11 +33,12 @@ public class GameServices: CAPPlugin, GKGameCenterControllerDelegate {
     }
     
     @objc func showLeaderboard(_ call: CAPPluginCall) {
+        let leaderboardID = String(call.getString("leaderboardId") ?? "") // Property to get the leaderboard ID
         DispatchQueue.main.async {
             self.call = call
             let leaderboardViewController = GKGameCenterViewController()
             leaderboardViewController.viewState = .leaderboards
-            leaderboardViewController.leaderboardIdentifier = "openforge.rockthesteps.leaderboard.io"
+            leaderboardViewController.leaderboardIdentifier = leaderboardID
             leaderboardViewController.gameCenterDelegate = self
             leaderboardViewController.leaderboardTimeScope = .allTime
             self.bridge?.viewController?.present(leaderboardViewController, animated: true, completion: nil)
@@ -66,18 +65,36 @@ public class GameServices: CAPPlugin, GKGameCenterControllerDelegate {
     @objc func submitScore(_ call: CAPPluginCall) {
         self.call = call
         
-        let leaderboardId = call.getString("leaderboardId") // Property to get the leaderboard ID
+        let leaderboardID = String(call.getString("leaderboardId") ?? "") // Property to get the leaderboard ID
         let score = Int64(call.getInt("score") ?? 0) // Property to get the total score to submit
         
-        if GKLocalPlayer.local.isAuthenticated {
-            let gkScore = GKScore(leaderboardIdentifier: "leaderBoardID")
-            gkScore.value = score
-            if #available(iOS 14.0, *) {
-                GKLeaderboard.submitScore(Int(score), context: 0, player: GKLocalPlayer.local, leaderboardIDs: ["openforge.rockthesteps.leaderboard.io"]) { error in call.reject("error submiting score")}
-            } else {
-                // Fallback on earlier versions
-            }
+        guard GKLocalPlayer.local.isAuthenticated else {
+            print("Player is not authenticated")
+            call.reject("Player is not authenticated")
+            return
         }
+        
+        let scoreReporter = GKScore(leaderboardIdentifier: leaderboardID)
+        scoreReporter.value = Int64(score)
+        scoreReporter.context = 0
+        
+        let scoreArray: [GKScore] = [scoreReporter]
+        
+        GKScore.report(scoreArray, withCompletionHandler: { error in
+            if let error = error {
+                // Handle score submission error
+                print("Score submission failed with error: \(error.localizedDescription)")
+                call.reject("Score submission failed, try again.")
+            } else {
+                let result = [
+                    "type": "sucess",
+                    "message": "Score has been submitted successfully"
+                ]
+                // Score submitted successfully
+                print("Score submitted")
+                call.resolve(result as PluginCallResultData)
+            }
+        })
     }
     
 //    @objc func getUserScore(_ call: CAPPluginCall) {
