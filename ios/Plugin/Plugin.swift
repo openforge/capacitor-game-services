@@ -20,10 +20,8 @@ public class GameServices: CAPPlugin, GKGameCenterControllerDelegate {
             if localPlayer.isAuthenticated {
                 print("User is authenticated to Game Center!")
                 let result = [
-                    "response": [
-                        "player_name": localPlayer.displayName,
-                        "player_id": localPlayer.gamePlayerID
-                    ]
+                    "player_name": localPlayer.displayName,
+                    "player_id": localPlayer.gamePlayerID
                 ]
                 call.resolve(result)
             } else if gcAuthVC != nil {
@@ -35,19 +33,15 @@ public class GameServices: CAPPlugin, GKGameCenterControllerDelegate {
     }
     
     @objc func showLeaderboard(_ call: CAPPluginCall) {
-        self.call = call
-        let result = [
-            "response": []
-        ]
+        let leaderboardID = String(call.getString("leaderboardId") ?? "") // Property to get the leaderboard ID
         DispatchQueue.main.async {
-            let vc = GKGameCenterViewController()
-            vc.gameCenterDelegate = self
-            vc.viewState = .leaderboards
-            vc.leaderboardIdentifier = call.getString("leaderboardId")
-            self.bridge?.viewController?.present(vc, animated: true, completion: {() -> Void in
-                print("[GameServices] Achievement is about to present")
-                call.resolve(result as PluginCallResultData)
-            })
+            self.call = call
+            let leaderboardViewController = GKGameCenterViewController()
+            leaderboardViewController.viewState = .leaderboards
+            leaderboardViewController.leaderboardIdentifier = leaderboardID
+            leaderboardViewController.gameCenterDelegate = self
+            leaderboardViewController.leaderboardTimeScope = .allTime
+            self.bridge?.viewController?.present(leaderboardViewController, animated: true, completion: nil)
         }
     }
     
@@ -70,31 +64,62 @@ public class GameServices: CAPPlugin, GKGameCenterControllerDelegate {
     
     @objc func submitScore(_ call: CAPPluginCall) {
         self.call = call
-        let result = [
-            "response": []
-        ]
-        // default not working!!!
-        let leaderboardId = call.getString("leaderboardId") ?? "testLeaderboard" // for these defaults, have a default leaderboard set here? instead of setting a players default leaderboard??
         
-        // TODO: is there any additional error handling here?
-        let score = Int64(call.getInt("score") ?? 0) // TODO: test what happens when expects an Integer but gets booleans, or even a string
-        print("[GameServices] Sumbitting Score \(score) to leaderboard id \(leaderboardId)")
+        let leaderboardID = String(call.getString("leaderboardId") ?? "") // Property to get the leaderboard ID
+        let score = Int64(call.getInt("score") ?? 0) // Property to get the total score to submit
         
-        let newScore = GKScore(leaderboardIdentifier: leaderboardId)
-        newScore.value = score
-        
-        GKScore.report([newScore]) { error in
-            guard error == nil else {
-                let errorMessage = "[GameServices] \(error?.localizedDescription ?? "")"
-                print(errorMessage)
-                call.reject(errorMessage)
-                return
-            }
-            let successMessage = "[GameServices] Report Score Success"
-            print(successMessage)
-            call.resolve(result as PluginCallResultData)
+        guard GKLocalPlayer.local.isAuthenticated else {
+            print("Player is not authenticated")
+            call.reject("Player is not authenticated")
+            return
         }
+        
+        let scoreReporter = GKScore(leaderboardIdentifier: leaderboardID)
+        scoreReporter.value = Int64(score)
+        scoreReporter.context = 0
+        
+        let scoreArray: [GKScore] = [scoreReporter]
+        
+        GKScore.report(scoreArray, withCompletionHandler: { error in
+            if let error = error {
+                // Handle score submission error
+                print("Score submission failed with error: \(error.localizedDescription)")
+                call.reject("Score submission failed, try again.")
+            } else {
+                let result = [
+                    "type": "sucess",
+                    "message": "Score has been submitted successfully"
+                ]
+                // Score submitted successfully
+                print("Score submitted")
+                call.resolve(result as PluginCallResultData)
+            }
+        })
     }
+    
+//    @objc func getUserScore(_ call: CAPPluginCall) {
+//        self.call = call
+//
+//        let leaderboardID = call.getString("leaderboardId") // Property to get the leaderboard
+//
+//        let leaderboard = GKLeaderboard(players: nil)
+//        leaderboard.playerScope = .global
+//        leaderboard.timeScope = .allTime
+//        leaderboard.identifier = leaderboardID
+//        leaderboard.range = NSRange(location: 1, length: 1)
+//
+//        leaderboard.loadEntries { (scores, error) in
+//            if let error = error {
+//                call.reject("Failed to load the entries for the leaderboards", error.localizedDescription)
+//            } else if let scores = scores {
+//                if let topScore = scores.first {
+//                    let totalScore = topScore.value
+//                    print("Total score: \(totalScore)")
+//                    call.resolve(totalScore)
+//                }
+//            }
+//        }
+//    }
     
     @objc func unlockAchievement(_ call: CAPPluginCall) {
         print("unlockAchievement:called")
