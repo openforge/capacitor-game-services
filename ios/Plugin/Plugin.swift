@@ -174,7 +174,7 @@ public class GameServices: CAPPlugin, GKGameCenterControllerDelegate {
         achievementToComplete.showsCompletionBanner = true
         achievementToComplete.percentComplete = progressComplete
         
-        GKAchievement.report([newAchievement]) { error in
+        GKAchievement.report([achievementToComplete]) { error in
             guard error == nil else {
                 print("Error updating achievement \(error?.localizedDescription ?? "")")
                 call.reject("Error updating achievement \(error?.localizedDescription ?? "")")
