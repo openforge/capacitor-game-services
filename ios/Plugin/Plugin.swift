@@ -47,18 +47,19 @@ public class GameServices: CAPPlugin, GKGameCenterControllerDelegate {
     
     @objc func showAchievements(_ call: CAPPluginCall) {
         self.call = call
-        let result = [
-            "response": []
-        ]
+        
+        guard GKLocalPlayer.local.isAuthenticated else {
+            print("Player is not authenticated")
+            call.reject("Player is not authenticated")
+            return
+        }
+        
         print("[GameServices] Showing Achievements")
         DispatchQueue.main.async {
-            let vc = GKGameCenterViewController()
-            vc.gameCenterDelegate = self;
-            vc.viewState = .achievements
-            self.bridge?.viewController?.present(vc, animated: true, completion: {() -> Void in
-                print("[GameServices] Achievement is about to present")
-                call.resolve(result as PluginCallResultData)
-            })
+            let achievementsViewController = GKGameCenterViewController()
+            achievementsViewController.gameCenterDelegate = self
+            achievementsViewController.viewState = .achievements
+            self.bridge?.viewController?.present(achievementsViewController, animated: true, completion: nil)
         }
     }
     
