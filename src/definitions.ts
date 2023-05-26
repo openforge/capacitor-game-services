@@ -35,7 +35,7 @@ export interface GameServicesPlugin {
    *
    */
   unlockAchievement(options: {
-    achievementId: string; // * ID of achievement to unlock
+    achievementID: string; // * ID of achievement to unlock
   }): Promise<any>;
 
   /**
