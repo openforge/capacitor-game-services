@@ -98,6 +98,30 @@ public class GameServices: CAPPlugin, GKGameCenterControllerDelegate {
         })
     }
     
+//    @objc func getUserScore(_ call: CAPPluginCall) {
+//        self.call = call
+//
+//        let leaderboardID = call.getString("leaderboardId") // Property to get the leaderboard
+//
+//        let leaderboard = GKLeaderboard(players: nil)
+//        leaderboard.playerScope = .global
+//        leaderboard.timeScope = .allTime
+//        leaderboard.identifier = leaderboardID
+//        leaderboard.range = NSRange(location: 1, length: 1)
+//
+//        leaderboard.loadEntries { (scores, error) in
+//            if let error = error {
+//                call.reject("Failed to load the entries for the leaderboards", error.localizedDescription)
+//            } else if let scores = scores {
+//                if let topScore = scores.first {
+//                    let totalScore = topScore.value
+//                    print("Total score: \(totalScore)")
+//                    call.resolve(totalScore)
+//                }
+//            }
+//        }
+//    }
+    
     @objc func unlockAchievement(_ call: CAPPluginCall) {
         print("unlockAchievement:called")
         setProgressAchievement(call, 100.0)
