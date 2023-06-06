@@ -47,18 +47,19 @@ public class GameServices: CAPPlugin, GKGameCenterControllerDelegate {
     
     @objc func showAchievements(_ call: CAPPluginCall) {
         self.call = call
-        let result = [
-            "response": []
-        ]
+        
+        guard GKLocalPlayer.local.isAuthenticated else {
+            print("Player is not authenticated")
+            call.reject("Player is not authenticated")
+            return
+        }
+        
         print("[GameServices] Showing Achievements")
         DispatchQueue.main.async {
-            let vc = GKGameCenterViewController()
-            vc.gameCenterDelegate = self;
-            vc.viewState = .achievements
-            self.bridge?.viewController?.present(vc, animated: true, completion: {() -> Void in
-                print("[GameServices] Achievement is about to present")
-                call.resolve(result as PluginCallResultData)
-            })
+            let achievementsViewController = GKGameCenterViewController()
+            achievementsViewController.gameCenterDelegate = self
+            achievementsViewController.viewState = .achievements
+            self.bridge?.viewController?.present(achievementsViewController, animated: true, completion: nil)
         }
     }
     
@@ -123,12 +124,12 @@ public class GameServices: CAPPlugin, GKGameCenterControllerDelegate {
     
     @objc func unlockAchievement(_ call: CAPPluginCall) {
         print("unlockAchievement:called")
-        progressAchievementDelegate(call, 100.0)
+        setProgressAchievement(call, 100.0)
     }
     
     @objc func progressAchievement(_ call: CAPPluginCall) {
         print("progressAchievement:called")
-        progressAchievementDelegate(call, call.getDouble("percentComplete"))
+        setProgressAchievement(call, call.getDouble("percentComplete"))
     }
     
     @objc func resetAllAchievementProgress(_ call: CAPPluginCall) {
@@ -150,39 +151,35 @@ public class GameServices: CAPPlugin, GKGameCenterControllerDelegate {
         })
     }
     
-    /**
-     Success response here means nothing?????
-     TODO: Test if ios game service can set achievement progress that is backwards?
-     could do setValue on key progressComplete to possibly clean this reuse up
-        logging is going to get messed up if reading values only in delegate
-     
-     need to have way to know when something fails
-     
-        this is throttled, not buffered, how should it be communicated that sequential calls to the same achievement wont register
-
-     */
-    private func progressAchievementDelegate(_ call: CAPPluginCall, _ percentComplete: Double?) {
+    private func setProgressAchievement(_ call: CAPPluginCall, _ percentComplete: Double?) {
         self.call = call
+        
+        guard GKLocalPlayer.local.isAuthenticated else {
+            print("Player is not authenticated")
+            call.reject("Player is not authenticated")
+            return
+        }
+        
         let result = [
-            "response": []
+            "type": "success",
+            "message": "Achievement Progress Was Updating"
         ]
-        let achievementId = call.getString("achievementId") ?? "";
+        
+        let achievementID = call.getString("achievementID") ?? ""
         let progressComplete = percentComplete ?? 100.0
         
         print("[GameServices] Setting Achievement Percentage \(progressComplete)")
                         
-        let newAchievement = GKAchievement(identifier: achievementId)
-        newAchievement.showsCompletionBanner = true
-        newAchievement.percentComplete = progressComplete
+        let achievementToComplete = GKAchievement(identifier: achievementID)
+        achievementToComplete.showsCompletionBanner = true
+        achievementToComplete.percentComplete = progressComplete
         
-        GKAchievement.report([newAchievement]) { error in
+        GKAchievement.report([achievementToComplete]) { error in
             guard error == nil else {
-                print("[GameServices] \(error?.localizedDescription ?? "")")
-                call.reject("[GameServices] \(error?.localizedDescription ?? "")")
+                print("Error updating achievement \(error?.localizedDescription ?? "")")
+                call.reject("Error updating achievement \(error?.localizedDescription ?? "")")
                 return
             }
-            let successMessage = "[GameServices] Achievement Progress Was Reported"
-            print(successMessage)
             call.resolve(result as PluginCallResultData)
         }
     }

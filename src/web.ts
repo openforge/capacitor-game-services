@@ -27,13 +27,13 @@ export class GameServicesWeb extends WebPlugin implements GameServicesPlugin {
     return Promise.resolve();
   }
 
-  unlockAchievement(_: { achievementId: string }): Promise<any> {
+  unlockAchievement(_: { achievementID: string }): Promise<any> {
     console.warn('GameServices does not have web implementation.');
     return Promise.resolve();
   }
 
   progressAchievement(_: {
-    achievementId: string;
+    achievementID: string;
     percentComplete: number;
   }): Promise<any> {
     console.warn('GameServices does not have web implementation.');

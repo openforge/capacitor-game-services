@@ -35,7 +35,7 @@ export interface GameServicesPlugin {
    *
    */
   unlockAchievement(options: {
-    achievementId: string; // * ID of achievement to unlock
+    achievementID: string; // * ID of achievement to unlock
   }): Promise<any>;
 
   /**
@@ -46,7 +46,7 @@ export interface GameServicesPlugin {
    * * would be able to go backwards on ios, but difficult to go backwards on android, would require a reset
    */
   progressAchievement(options: {
-    achievementId: string;
+    achievementID: string;
     percentComplete: number;
   }): Promise<any>;
 

@@ -18,6 +18,21 @@
 ## Installation
 Run `npm install @openforge/capacitor-game-services`
 
+## How To Use
+1. Import the plugin into your `ts` file as `import { GameServices } from '@openforge/capacitor-game-services';`
+
+## Supported Methods
+
+| Method                           | Description                                          |
+| -------------------------------- | ---------------------------------------------------- |
+| signIn                           | Method to sign in a user to Game Services            |
+| showLeaderboard                  | Method to open Leaderboard view from Game Services   |
+| showAchievements                 | Method to open Achievements view from Game Services  |
+| submitScore                      | Method to submit a score to the leaderboards table   |
+| unlockAchievement                | Method to submit a score to the leaderboards table   |
+| progressAchievement              | Method to set some progress to an achievement        |
+| resetAllAchievementProgress      | Method to set some reset all achievements            |
+
 ## Required
 
 1. Google Developer Account
