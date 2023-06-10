@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="default_web_client_id">REPLACED_AT_RUNTIME_BY_PLIST</string>
+    <string name="my_string">Just a simple string</string>
+</resources>

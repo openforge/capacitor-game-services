@@ -18,6 +18,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.games.Games;
 import com.google.android.gms.games.GamesClient;
 import com.google.android.gms.tasks.Task;
+import com.google.android.gms.common.api.ApiException;
 
 /**
  * GameServices plugin
@@ -44,49 +45,56 @@ public class GameServices extends Plugin {
                 .build();
     }
 
-    @Override
-    protected void handleOnActivityResult(final int requestCode, final int resultCode, final Intent data) {
-        super.handleOnActivityResult(requestCode, resultCode, data);
-        Log.d(TAG, "handleOnActivityResult called");
+    // MARK: Plugin Methods
+    @PluginMethod
+    public void signIn(PluginCall call) {
+        saveCall(call);
+        
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_GAMES_SIGN_IN)
+                .requestProfile()
+                .build();
 
-        final PluginCall savedCall = getSavedCall();
+        GoogleSignInClient signInClient = GoogleSignIn.getClient(getContext(), gso);
+        signInClient.silentSignIn().addOnCompleteListener(getActivity(), task -> {
+            if (task.isSuccessful()) {
+                // User is already signed in, you can perform further actions here
+                GoogleSignInAccount account = task.getResult();
+                handleSignInResult(account, call);
+            } else {
+                // User is not signed in, start the sign-in flow
+                Intent signInIntent = signInClient.getSignInIntent();
+                startActivityForResult(call, signInIntent, RC_SIGN_IN);
+            }
+        });
+    }
+
+    protected void handleOnActivityResult(int requestCode, int resultCode, Intent data, PluginCall call) {
+        super.handleOnActivityResult(requestCode, resultCode, data);
 
         if (requestCode == RC_SIGN_IN) {
-            Log.d(TAG, "starting handler for rc sign in");
-            final GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
-            if (result.isSuccess()) {
-                final GoogleSignInAccount signInAccount = result.getSignInAccount();
-                this.registerPopupView(signInAccount);
-                Games.getPlayersClient(getContext(), signInAccount).getCurrentPlayer().addOnCompleteListener(playerClientTask -> {
-                    JSObject response = new JSObject();
-                    JSObject responseData = new JSObject();
-                    responseData.put("player_name", playerClientTask.getResult().getDisplayName());
-                    responseData.put("player_id", playerClientTask.getResult().getPlayerId());
-                    response.put("response", responseData);
-                    savedCall.resolve(response);
-                });
-            } else {
-                String message = result.getStatus().getStatusMessage();
-                Integer code = result.getStatus().getStatusCode();
-                Log.e(TAG, "signInWithIntent:failure " + message + " " + code.toString());
-                if (savedCall != null) {
-                    JSObject response = new JSObject();
-                    JSObject responseData = new JSObject();
-                    responseData.put("error", "Error while trying to sign in");
-                    response.put("response", responseData);
-                    savedCall.resolve(response);
-                }
+            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+            try {
+                GoogleSignInAccount account = task.getResult(ApiException.class);
+                handleSignInResult(account, call);
+            } catch (ApiException e) {
+                // Handle sign-in failure (e.g., show an error message)
+                call.error("Login failed: " + e.getStatusCode());
             }
         }
     }
 
-    // MARK: Plugin Methods
-    @PluginMethod()
-    public void signIn(final PluginCall call) {
-        Log.d(TAG, "signIn called");
-        saveCall(call);
-        startSilentSignIn();
+    private void handleSignInResult(GoogleSignInAccount account, PluginCall call) {
+        // Perform any necessary operations with the signed-in account
+        // For example, you can retrieve the display name and email
+        JSObject result = new JSObject();
+        result.put("displayName", account.getDisplayName());
+        result.put("email", account.getEmail());
+        // Return the result to the JavaScript side
+        call.resolve(result);
     }
+
+
+
 
     @PluginMethod()
     public void signOut(final PluginCall call) {

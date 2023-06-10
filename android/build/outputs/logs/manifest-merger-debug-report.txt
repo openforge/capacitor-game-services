@@ -1,0 +1,27 @@
+-- Merging decision tree log ---
+manifest
+ADDED from /Users/ricardomadrid/Documents/openforge/capacitor-game-services/android/src/main/AndroidManifest.xml:1:1-5:12
+INJECTED from /Users/ricardomadrid/Documents/openforge/capacitor-game-services/android/src/main/AndroidManifest.xml:1:1-5:12
+INJECTED from /Users/ricardomadrid/Documents/openforge/capacitor-game-services/android/src/main/AndroidManifest.xml:1:1-5:12
+	package
+		ADDED from /Users/ricardomadrid/Documents/openforge/capacitor-game-services/android/src/main/AndroidManifest.xml:2:7-64
+		INJECTED from /Users/ricardomadrid/Documents/openforge/capacitor-game-services/android/src/main/AndroidManifest.xml
+		INJECTED from /Users/ricardomadrid/Documents/openforge/capacitor-game-services/android/src/main/AndroidManifest.xml
+	xmlns:android
+		ADDED from /Users/ricardomadrid/Documents/openforge/capacitor-game-services/android/src/main/AndroidManifest.xml:1:11-69
+application
+ADDED from /Users/ricardomadrid/Documents/openforge/capacitor-game-services/android/src/main/AndroidManifest.xml:3:3-4:17
+uses-sdk
+INJECTED from /Users/ricardomadrid/Documents/openforge/capacitor-game-services/android/src/main/AndroidManifest.xml reason: use-sdk injection requested
+INJECTED from /Users/ricardomadrid/Documents/openforge/capacitor-game-services/android/src/main/AndroidManifest.xml
+INJECTED from /Users/ricardomadrid/Documents/openforge/capacitor-game-services/android/src/main/AndroidManifest.xml
+INJECTED from /Users/ricardomadrid/Documents/openforge/capacitor-game-services/android/src/main/AndroidManifest.xml
+INJECTED from /Users/ricardomadrid/Documents/openforge/capacitor-game-services/android/src/main/AndroidManifest.xml
+	android:targetSdkVersion
+		INJECTED from /Users/ricardomadrid/Documents/openforge/capacitor-game-services/android/src/main/AndroidManifest.xml
+		ADDED from /Users/ricardomadrid/Documents/openforge/capacitor-game-services/android/src/main/AndroidManifest.xml
+		INJECTED from /Users/ricardomadrid/Documents/openforge/capacitor-game-services/android/src/main/AndroidManifest.xml
+	android:minSdkVersion
+		INJECTED from /Users/ricardomadrid/Documents/openforge/capacitor-game-services/android/src/main/AndroidManifest.xml
+		ADDED from /Users/ricardomadrid/Documents/openforge/capacitor-game-services/android/src/main/AndroidManifest.xml
+		INJECTED from /Users/ricardomadrid/Documents/openforge/capacitor-game-services/android/src/main/AndroidManifest.xml
