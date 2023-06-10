@@ -949,6 +949,7 @@ int string common_signin_button_text 0x0
 int string common_signin_button_text_long 0x0
 int string default_web_client_id 0x0
 int string my_string 0x0
+int string play_games_sdk_version 0x0
 int string search_menu_title 0x0
 int string status_bar_notification_info_overflow 0x0
 int style AlertDialog_AppCompat 0x0
@@ -1227,6 +1228,7 @@ int style Theme_AppCompat_Light_Dialog_Alert 0x0
 int style Theme_AppCompat_Light_Dialog_MinWidth 0x0
 int style Theme_AppCompat_Light_NoActionBar 0x0
 int style Theme_AppCompat_NoActionBar 0x0
+int style Theme_Games_Transparent 0x0
 int style Widget_AppCompat_ActionBar 0x0
 int style Widget_AppCompat_ActionBar_Solid 0x0
 int style Widget_AppCompat_ActionBar_TabBar 0x0
