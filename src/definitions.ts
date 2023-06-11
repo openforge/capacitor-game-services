@@ -1,4 +1,5 @@
 export interface GameServicesPlugin {
+  initialize(): Promise<any>;
   /**
    * * Function to sign in a user
    *
