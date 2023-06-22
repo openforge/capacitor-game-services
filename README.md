@@ -13,34 +13,36 @@ npx cap sync
 
 <docgen-index>
 
-* [`echo(...)`](#echo)
 * [`signIn()`](#signin)
+* [`showLeaderboard(...)`](#showleaderboard)
 
 </docgen-index>
 
 <docgen-api>
 <!--Update the source file JSDoc comments and rerun docgen to update the docs below-->
 
-### echo(...)
-
-```typescript
-echo(options: { value: string; }) => Promise<{ value: string; }>
-```
-
-| Param         | Type                            |
-| ------------- | ------------------------------- |
-| **`options`** | <code>{ value: string; }</code> |
-
-**Returns:** <code>Promise&lt;{ value: string; }&gt;</code>
-
---------------------
-
-
 ### signIn()
 
 ```typescript
 signIn() => Promise<void>
 ```
+
+* Method to sign-in a user to Google Play Services
+
+--------------------
+
+
+### showLeaderboard(...)
+
+```typescript
+showLeaderboard(leaderboardID: string) => Promise<void>
+```
+
+* Method to display the Leaderboards view from Google Play Services SDK
+
+| Param               | Type                | Description |
+| ------------------- | ------------------- | ----------- |
+| **`leaderboardID`** | <code>string</code> | as string   |
 
 --------------------
 

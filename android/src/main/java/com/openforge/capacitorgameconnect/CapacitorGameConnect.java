@@ -1,16 +1,19 @@
 package com.openforge.capacitorgameconnect;
 
+import android.content.Intent;
 import android.util.Log;
-
+import androidx.activity.result.ActivityResultLauncher;
 import androidx.appcompat.app.AppCompatActivity;
-
 import com.getcapacitor.PluginCall;
 import com.google.android.gms.games.GamesSignInClient;
 import com.google.android.gms.games.PlayGames;
+import com.google.android.gms.tasks.OnSuccessListener;
 
 public class CapacitorGameConnect {
+
     private AppCompatActivity activity;
     private static final String TAG = "CapacitorGameConnect";
+    private static final int RC_LEADERBOARD_UI = 9004;
 
     public CapacitorGameConnect(AppCompatActivity activity) {
         this.activity = activity;
@@ -25,20 +28,47 @@ public class CapacitorGameConnect {
         Log.i(TAG, "SignIn method called");
         GamesSignInClient gamesSignInClient = PlayGames.getGamesSignInClient(this.activity);
 
-        gamesSignInClient.isAuthenticated().addOnCompleteListener(isAuthenticatedTask -> {
-            boolean isAuthenticated =
-                    (isAuthenticatedTask.isSuccessful() &&
-                            isAuthenticatedTask.getResult().isAuthenticated());
+        gamesSignInClient
+            .isAuthenticated()
+            .addOnCompleteListener(
+                isAuthenticatedTask -> {
+                    boolean isAuthenticated = (isAuthenticatedTask.isSuccessful() && isAuthenticatedTask.getResult().isAuthenticated());
 
-            if (isAuthenticated) {
-                Log.i(TAG, "User is already authenticated");
-                call.resolve();
-            } else {
-                gamesSignInClient.signIn().addOnCompleteListener(data -> {
-                   Log.i(TAG, "Sign-in completed successful");
-                    call.resolve();
-                });
-            }
-        });
+                    if (isAuthenticated) {
+                        Log.i(TAG, "User is already authenticated");
+                        call.resolve();
+                    } else {
+                        gamesSignInClient
+                            .signIn()
+                            .addOnCompleteListener(
+                                data -> {
+                                    Log.i(TAG, "Sign-in completed successful");
+                                    call.resolve();
+                                }
+                            );
+                    }
+                }
+            );
+    }
+
+    /**
+     * * Method to display the Leaderboards view from Google Play Services SDK
+     * 
+     * @param call as PluginCall
+     * @param startActivityIntent as ActivityResultLauncher<Intent>
+     */
+    public void showLeaderboard(PluginCall call, ActivityResultLauncher<Intent> startActivityIntent) {
+        Log.i(TAG, "showLeaderboard " + call.getString("leaderboardID"));
+        PlayGames
+            .getLeaderboardsClient(this.activity)
+            .getLeaderboardIntent("CgkI_b7OpKUXEAIQAA")
+            .addOnSuccessListener(
+                new OnSuccessListener<Intent>() {
+                    @Override
+                    public void onSuccess(Intent intent) {
+                        startActivityIntent.launch(intent);
+                    }
+                }
+            );
     }
 }
