@@ -10,4 +10,8 @@ export class CapacitorGameConnectWeb
     console.log('ECHO', options);
     return options;
   }
+
+  async signIn(): Promise<void> {
+      return Promise.resolve();
+  }
 }
