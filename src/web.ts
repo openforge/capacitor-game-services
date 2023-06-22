@@ -6,12 +6,11 @@ export class CapacitorGameConnectWeb
   extends WebPlugin
   implements CapacitorGameConnectPlugin
 {
-  async echo(options: { value: string }): Promise<{ value: string }> {
-    console.log('ECHO', options);
-    return options;
-  }
-
+  /**
+   * * Method to sign-in a user to Google Play Services
+   *
+   */
   async signIn(): Promise<void> {
-      return Promise.resolve();
+    return Promise.resolve();
   }
 }

@@ -1,5 +1,8 @@
 export interface CapacitorGameConnectPlugin {
-  echo(options: { value: string }): Promise<{ value: string }>;
-
+  /**
+   * * Method to sign-in a user to Google Play Services
+   *
+   *
+   */
   signIn(): Promise<void>;
 }
