@@ -44,4 +44,13 @@ export class CapacitorGameConnectWeb
   async showAchievements(): Promise<void> {
     return Promise.resolve();
   }
+
+  /**
+   * * Method to unlock an achievement
+   * 
+   * @returns  Promise
+   */
+  async unlockAchievement(): Promise<void> {
+    return Promise.resolve();
+  }
 }

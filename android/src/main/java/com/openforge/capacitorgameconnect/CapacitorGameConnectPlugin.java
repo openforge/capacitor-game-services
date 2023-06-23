@@ -57,4 +57,10 @@ public class CapacitorGameConnectPlugin extends Plugin {
         implementation.showAchievements(this.startActivityIntent);
         call.resolve();
     }
+
+    @PluginMethod
+    public void unlockAchievement(PluginCall call) {
+        implementation.unlockAchievement();
+        call.resolve();
+    }
 }

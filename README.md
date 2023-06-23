@@ -17,6 +17,7 @@ npx cap sync
 * [`showLeaderboard(...)`](#showleaderboard)
 * [`submitScore()`](#submitscore)
 * [`showAchievements()`](#showachievements)
+* [`unlockAchievement()`](#unlockachievement)
 
 </docgen-index>
 
@@ -29,7 +30,7 @@ npx cap sync
 signIn() => Promise<void>
 ```
 
-* Method to sign-in a user to Google Play Services
+* Method to sign-in a user
 
 --------------------
 
@@ -40,7 +41,7 @@ signIn() => Promise<void>
 showLeaderboard(leaderboardID: string) => Promise<void>
 ```
 
-* Method to display the Leaderboards view from Google Play Services SDK
+* Method to display the Leaderboards
 
 | Param               | Type                | Description |
 | ------------------- | ------------------- | ----------- |
@@ -66,7 +67,18 @@ submitScore() => Promise<void>
 showAchievements() => Promise<void>
 ```
 
-* Method to display the Achievements view from Google Play SDK
+* Method to display the Achievements view
+
+--------------------
+
+
+### unlockAchievement()
+
+```typescript
+unlockAchievement() => Promise<void>
+```
+
+* Method to unlock an achievement
 
 --------------------
 

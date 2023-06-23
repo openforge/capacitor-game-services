@@ -1,13 +1,13 @@
 export interface CapacitorGameConnectPlugin {
   /**
-   * * Method to sign-in a user to Google Play Services
+   * * Method to sign-in a user
    *
    *
    */
   signIn(): Promise<void>;
 
   /**
-   * * Method to display the Leaderboards view from Google Play Services SDK
+   * * Method to display the Leaderboards
    * 
    * @param leaderboardID as string
    */
@@ -20,8 +20,14 @@ export interface CapacitorGameConnectPlugin {
   submitScore(): Promise<void>;
 
   /**
-   * * Method to display the Achievements view from Google Play SDK
+   * * Method to display the Achievements view
    * 
    */
   showAchievements(): Promise<void>;
+
+  /**
+   * * Method to unlock an achievement
+   * 
+   */
+  unlockAchievement(): Promise<void>;
 }

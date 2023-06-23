@@ -100,4 +100,13 @@ public class CapacitorGameConnect {
                 }
             );
     }
+
+    /**
+     * * Method to unlock an achievement
+     *
+     */
+    public void unlockAchievement() {
+        Log.i(TAG, "unlockAchievement has been called");
+        PlayGames.getAchievementsClient(this.activity).unlock("CgkI_b7OpKUXEAIQAw");
+    }
 }
