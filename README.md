@@ -15,6 +15,7 @@ npx cap sync
 
 * [`signIn()`](#signin)
 * [`showLeaderboard(...)`](#showleaderboard)
+* [`submitScore()`](#submitscore)
 
 </docgen-index>
 
@@ -43,6 +44,15 @@ showLeaderboard(leaderboardID: string) => Promise<void>
 | Param               | Type                | Description |
 | ------------------- | ------------------- | ----------- |
 | **`leaderboardID`** | <code>string</code> | as string   |
+
+--------------------
+
+
+### submitScore()
+
+```typescript
+submitScore() => Promise<void>
+```
 
 --------------------
 

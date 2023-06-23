@@ -26,4 +26,13 @@ export class CapacitorGameConnectWeb
     );
     return Promise.resolve();
   }
+
+  /**
+   * * Method to submit a score to the Google Play Services SDK
+   * 
+   * @returns Promise
+   */
+  async submitScore(): Promise<void> {
+      return Promise.resolve();
+  }
 }

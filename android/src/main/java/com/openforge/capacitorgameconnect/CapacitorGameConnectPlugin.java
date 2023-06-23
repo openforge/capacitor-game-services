@@ -45,4 +45,10 @@ public class CapacitorGameConnectPlugin extends Plugin {
         implementation.showLeaderboard(call, this.startActivityIntent);
         call.resolve();
     }
+
+    @PluginMethod
+    public void submitScore(PluginCall call) {
+        implementation.submitScore(call);
+        call.resolve();
+    }
 }

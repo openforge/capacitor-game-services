@@ -13,7 +13,6 @@ public class CapacitorGameConnect {
 
     private AppCompatActivity activity;
     private static final String TAG = "CapacitorGameConnect";
-    private static final int RC_LEADERBOARD_UI = 9004;
 
     public CapacitorGameConnect(AppCompatActivity activity) {
         this.activity = activity;
@@ -53,7 +52,7 @@ public class CapacitorGameConnect {
 
     /**
      * * Method to display the Leaderboards view from Google Play Services SDK
-     * 
+     *
      * @param call as PluginCall
      * @param startActivityIntent as ActivityResultLauncher<Intent>
      */
@@ -70,5 +69,15 @@ public class CapacitorGameConnect {
                     }
                 }
             );
+    }
+
+    /**
+     * * Method to submit a score to the Google Play Services SDK
+     *
+     * @param call as PluginCall
+     */
+    public void submitScore(PluginCall call) {
+        Log.i(TAG, "submitScore has been called");
+        PlayGames.getLeaderboardsClient(this.activity).submitScore("CgkI_b7OpKUXEAIQAA", 1000);
     }
 }

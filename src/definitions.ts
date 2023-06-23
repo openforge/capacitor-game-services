@@ -12,4 +12,10 @@ export interface CapacitorGameConnectPlugin {
    * @param leaderboardID as string
    */
   showLeaderboard(leaderboardID: string): Promise<void>;
+
+  /**
+   * * Method to submit a score to the Google Play Services SDK
+   * 
+   */
+  submitScore(): Promise<void>;
 }
