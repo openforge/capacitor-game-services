@@ -18,6 +18,7 @@ npx cap sync
 * [`submitScore()`](#submitscore)
 * [`showAchievements()`](#showachievements)
 * [`unlockAchievement()`](#unlockachievement)
+* [`incrementAchievementProgress()`](#incrementachievementprogress)
 
 </docgen-index>
 
@@ -79,6 +80,17 @@ unlockAchievement() => Promise<void>
 ```
 
 * Method to unlock an achievement
+
+--------------------
+
+
+### incrementAchievementProgress()
+
+```typescript
+incrementAchievementProgress() => Promise<void>
+```
+
+* Method to increment the progress of an achievement
 
 --------------------
 

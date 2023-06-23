@@ -30,4 +30,9 @@ export interface CapacitorGameConnectPlugin {
    * 
    */
   unlockAchievement(): Promise<void>;
+
+  /**
+   * * Method to increment the progress of an achievement
+   */
+  incrementAchievementProgress(): Promise<void>;
 }

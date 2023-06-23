@@ -53,4 +53,13 @@ export class CapacitorGameConnectWeb
   async unlockAchievement(): Promise<void> {
     return Promise.resolve();
   }
+
+  /**
+   * * Method to increment the progress of an achievement
+   * 
+   * @returns Promise
+   */
+  async incrementAchievementProgress(): Promise<void> {
+    return Promise.resolve();
+  }
 }

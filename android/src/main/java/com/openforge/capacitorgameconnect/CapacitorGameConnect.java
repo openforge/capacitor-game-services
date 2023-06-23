@@ -109,4 +109,13 @@ public class CapacitorGameConnect {
         Log.i(TAG, "unlockAchievement has been called");
         PlayGames.getAchievementsClient(this.activity).unlock("CgkI_b7OpKUXEAIQAw");
     }
+
+    /**
+     * * Method to increment the progress of an achievement
+     *
+     */
+    public void incrementAchievementProgress() {
+        Log.i(TAG, "incrementAchievementProgress has been called");
+        PlayGames.getAchievementsClient(this.activity).increment("CgkI_b7OpKUXEAIQAw", 7);
+    }
 }

@@ -63,4 +63,10 @@ public class CapacitorGameConnectPlugin extends Plugin {
         implementation.unlockAchievement();
         call.resolve();
     }
+
+    @PluginMethod
+    public void incrementAchievementProgress(PluginCall call) {
+        implementation.incrementAchievementProgress();
+        call.resolve();
+    }
 }
