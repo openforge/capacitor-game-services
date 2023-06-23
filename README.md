@@ -16,6 +16,7 @@ npx cap sync
 * [`signIn()`](#signin)
 * [`showLeaderboard(...)`](#showleaderboard)
 * [`submitScore()`](#submitscore)
+* [`showAchievements()`](#showachievements)
 
 </docgen-index>
 
@@ -53,6 +54,19 @@ showLeaderboard(leaderboardID: string) => Promise<void>
 ```typescript
 submitScore() => Promise<void>
 ```
+
+* Method to submit a score to the Google Play Services SDK
+
+--------------------
+
+
+### showAchievements()
+
+```typescript
+showAchievements() => Promise<void>
+```
+
+* Method to display the Achievements view from Google Play SDK
 
 --------------------
 

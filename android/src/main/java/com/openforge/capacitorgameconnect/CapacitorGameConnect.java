@@ -80,4 +80,24 @@ public class CapacitorGameConnect {
         Log.i(TAG, "submitScore has been called");
         PlayGames.getLeaderboardsClient(this.activity).submitScore("CgkI_b7OpKUXEAIQAA", 1000);
     }
+
+    /**
+     * * Method to display the Achievements view from Google Play SDK
+     *
+     * @param startActivityIntent as ActivityResultLauncher<Intent>
+     */
+    public void showAchievements(ActivityResultLauncher<Intent> startActivityIntent) {
+        Log.i(TAG, "showAchievements has been called");
+        PlayGames
+            .getAchievementsClient(this.activity)
+            .getAchievementsIntent()
+            .addOnSuccessListener(
+                new OnSuccessListener<Intent>() {
+                    @Override
+                    public void onSuccess(Intent intent) {
+                        startActivityIntent.launch(intent);
+                    }
+                }
+            );
+    }
 }

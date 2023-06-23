@@ -18,4 +18,10 @@ export interface CapacitorGameConnectPlugin {
    * 
    */
   submitScore(): Promise<void>;
+
+  /**
+   * * Method to display the Achievements view from Google Play SDK
+   * 
+   */
+  showAchievements(): Promise<void>;
 }

@@ -16,7 +16,7 @@ export class CapacitorGameConnectWeb
 
   /**
    * Method to display the Leaderboards view from Google Play Services SDK
-   * 
+   *
    * @param leaderboardID as string
    */
   async showLeaderboard(leaderboardID: string): Promise<void> {
@@ -29,10 +29,19 @@ export class CapacitorGameConnectWeb
 
   /**
    * * Method to submit a score to the Google Play Services SDK
-   * 
+   *
    * @returns Promise
    */
   async submitScore(): Promise<void> {
-      return Promise.resolve();
+    return Promise.resolve();
+  }
+
+  /**
+   * * Method to display the Achievements view from Google Play SDK
+   *
+   * @returns Promise
+   */
+  async showAchievements(): Promise<void> {
+    return Promise.resolve();
   }
 }
