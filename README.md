@@ -15,10 +15,10 @@ npx cap sync
 
 * [`signIn()`](#signin)
 * [`showLeaderboard(...)`](#showleaderboard)
-* [`submitScore()`](#submitscore)
+* [`submitScore(...)`](#submitscore)
 * [`showAchievements()`](#showachievements)
-* [`unlockAchievement()`](#unlockachievement)
-* [`incrementAchievementProgress()`](#incrementachievementprogress)
+* [`unlockAchievement(...)`](#unlockachievement)
+* [`incrementAchievementProgress(...)`](#incrementachievementprogress)
 
 </docgen-index>
 
@@ -39,25 +39,29 @@ signIn() => Promise<void>
 ### showLeaderboard(...)
 
 ```typescript
-showLeaderboard(leaderboardID: string) => Promise<void>
+showLeaderboard(options: { leaderboardID: string; }) => Promise<void>
 ```
 
 * Method to display the Leaderboards
 
-| Param               | Type                | Description |
-| ------------------- | ------------------- | ----------- |
-| **`leaderboardID`** | <code>string</code> | as string   |
+| Param         | Type                                    |
+| ------------- | --------------------------------------- |
+| **`options`** | <code>{ leaderboardID: string; }</code> |
 
 --------------------
 
 
-### submitScore()
+### submitScore(...)
 
 ```typescript
-submitScore() => Promise<void>
+submitScore(options: { leaderboardID: string; totalScoreAmount: number; }) => Promise<void>
 ```
 
 * Method to submit a score to the Google Play Services SDK
+
+| Param         | Type                                                              |
+| ------------- | ----------------------------------------------------------------- |
+| **`options`** | <code>{ leaderboardID: string; totalScoreAmount: number; }</code> |
 
 --------------------
 
@@ -73,24 +77,32 @@ showAchievements() => Promise<void>
 --------------------
 
 
-### unlockAchievement()
+### unlockAchievement(...)
 
 ```typescript
-unlockAchievement() => Promise<void>
+unlockAchievement(options: { achievementID: string; }) => Promise<void>
 ```
 
 * Method to unlock an achievement
 
+| Param         | Type                                    |
+| ------------- | --------------------------------------- |
+| **`options`** | <code>{ achievementID: string; }</code> |
+
 --------------------
 
 
-### incrementAchievementProgress()
+### incrementAchievementProgress(...)
 
 ```typescript
-incrementAchievementProgress() => Promise<void>
+incrementAchievementProgress(options: { achievementID: string; pointsToIncrement: number; }) => Promise<void>
 ```
 
 * Method to increment the progress of an achievement
+
+| Param         | Type                                                               |
+| ------------- | ------------------------------------------------------------------ |
+| **`options`** | <code>{ achievementID: string; pointsToIncrement: number; }</code> |
 
 --------------------
 

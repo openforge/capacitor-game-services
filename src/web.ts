@@ -19,11 +19,8 @@ export class CapacitorGameConnectWeb
    *
    * @param leaderboardID as string
    */
-  async showLeaderboard(leaderboardID: string): Promise<void> {
-    console.info(
-      'showLeaderboard function has started with ID: ',
-      leaderboardID,
-    );
+  async showLeaderboard(options: { leaderboardID: string }): Promise<void> {
+    console.info('showLeaderboard function has been called', options);
     return Promise.resolve();
   }
 
@@ -32,7 +29,11 @@ export class CapacitorGameConnectWeb
    *
    * @returns Promise
    */
-  async submitScore(): Promise<void> {
+  async submitScore(options: {
+    leaderboardID: string;
+    totalScoreAmount: number;
+  }): Promise<void> {
+    console.info('submitScore function has been called', options);
     return Promise.resolve();
   }
 
@@ -47,19 +48,27 @@ export class CapacitorGameConnectWeb
 
   /**
    * * Method to unlock an achievement
-   * 
+   *
    * @returns  Promise
    */
-  async unlockAchievement(): Promise<void> {
+  async unlockAchievement(options: { achievementID: string }): Promise<void> {
+    console.info('unlockAchievement function has been called', options);
     return Promise.resolve();
   }
 
   /**
    * * Method to increment the progress of an achievement
-   * 
+   *
    * @returns Promise
    */
-  async incrementAchievementProgress(): Promise<void> {
+  async incrementAchievementProgress(options: {
+    achievementID: string;
+    pointsToIncrement: number;
+  }): Promise<void> {
+    console.info(
+      'incrementAchievementProgress function has been called',
+      options,
+    );
     return Promise.resolve();
   }
 }

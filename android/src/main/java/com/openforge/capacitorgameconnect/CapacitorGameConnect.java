@@ -42,7 +42,6 @@ public class CapacitorGameConnect {
                             .addOnCompleteListener(
                                 data -> {
                                     Log.i(TAG, "Sign-in completed successful");
-                                    call.resolve();
                                 }
                             );
                     }
@@ -57,10 +56,11 @@ public class CapacitorGameConnect {
      * @param startActivityIntent as ActivityResultLauncher<Intent>
      */
     public void showLeaderboard(PluginCall call, ActivityResultLauncher<Intent> startActivityIntent) {
-        Log.i(TAG, "showLeaderboard " + call.getString("leaderboardID"));
+        Log.i(TAG, "showLeaderboard has been called");
+        var leaderboardID = call.getString("leaderboardID");
         PlayGames
             .getLeaderboardsClient(this.activity)
-            .getLeaderboardIntent("CgkI_b7OpKUXEAIQAA")
+            .getLeaderboardIntent(leaderboardID)
             .addOnSuccessListener(
                 new OnSuccessListener<Intent>() {
                     @Override
@@ -78,7 +78,9 @@ public class CapacitorGameConnect {
      */
     public void submitScore(PluginCall call) {
         Log.i(TAG, "submitScore has been called");
-        PlayGames.getLeaderboardsClient(this.activity).submitScore("CgkI_b7OpKUXEAIQAA", 1000);
+        var leaderboardID = call.getString("leaderboardID");
+        var totalScoreAmount = call.getInt("totalScoreAmount");
+        PlayGames.getLeaderboardsClient(this.activity).submitScore(leaderboardID, totalScoreAmount);
     }
 
     /**
@@ -105,17 +107,20 @@ public class CapacitorGameConnect {
      * * Method to unlock an achievement
      *
      */
-    public void unlockAchievement() {
+    public void unlockAchievement(PluginCall call) {
         Log.i(TAG, "unlockAchievement has been called");
-        PlayGames.getAchievementsClient(this.activity).unlock("CgkI_b7OpKUXEAIQAw");
+        var achievementID = call.getString("achievementID");
+        PlayGames.getAchievementsClient(this.activity).unlock(achievementID);
     }
 
     /**
      * * Method to increment the progress of an achievement
      *
      */
-    public void incrementAchievementProgress() {
+    public void incrementAchievementProgress(PluginCall call) {
         Log.i(TAG, "incrementAchievementProgress has been called");
-        PlayGames.getAchievementsClient(this.activity).increment("CgkI_b7OpKUXEAIQAw", 7);
+        var achievementID = call.getString("achievementID");
+        var pointsToIncrement = call.getInt("pointsToIncrement");
+        PlayGames.getAchievementsClient(this.activity).increment(achievementID, pointsToIncrement);
     }
 }
