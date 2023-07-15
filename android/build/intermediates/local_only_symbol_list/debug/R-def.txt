@@ -1,0 +1,6 @@
+R_DEF: Internal format may change without notice
+local
+id webview
+layout bridge_layout_main
+string default_web_client_id
+string my_string
